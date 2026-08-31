@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { seller as sellerApi, admin as adminApi, coupons as couponsApi, disputes as disputesApi, reviews as reviewsApi, wallet as walletApi, categories as categoriesApi } from '../api/client';
 import toast from 'react-hot-toast';
 import {

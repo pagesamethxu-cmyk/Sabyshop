@@ -97,6 +97,8 @@ const ProductsManage = () => {
       toast.error(isKhmer ? 'សូមជ្រើសរើស File រូបភាពប៉ុណ្ណោះ' : 'Please select an image file');
       return;
     }
+    const localPreview = URL.createObjectURL(file);
+    setFormData(prev => ({ ...prev, imageUrl: localPreview }));
     setUploading(true);
     try {
       const fd = new FormData();
@@ -104,7 +106,7 @@ const ProductsManage = () => {
       const res = await adminApi.uploadImage(fd);
       const url = res.data?.data || res.data?.url || res.data || res;
       const cleanUrl = normalizeImageUrl(typeof url === 'string' ? url : '');
-      setFormData(prev => ({ ...prev, imageUrl: cleanUrl }));
+      setFormData(prev => ({ ...prev, imageUrl: cleanUrl || localPreview }));
       toast.success(isKhmer ? 'បាន Upload រូបភាពជោគជ័យ!' : 'Image uploaded successfully!');
     } catch (err) {
       console.error('Upload error:', err);
@@ -400,19 +402,23 @@ const ProductsManage = () => {
                       height: 72,
                       borderRadius: 10,
                       overflow: 'hidden',
-                      background: 'rgba(0, 0, 0, 0.4)',
+                      background: 'rgba(99, 102, 241, 0.08)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                      border: '1px solid rgba(255, 255, 255, 0.15)'
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      position: 'relative'
                     }}>
                       <img
                         src={normalizeImageUrl(formData.imageUrl)}
                         alt="Product Preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'relative', zIndex: 2 }}
                         onError={e => { e.target.style.display = 'none'; }}
                       />
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8', zIndex: 1 }}>
+                        <FiImage size={26} />
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
