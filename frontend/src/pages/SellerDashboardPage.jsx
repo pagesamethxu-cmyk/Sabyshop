@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { seller as sellerApi, admin as adminApi, coupons as couponsApi, disputes as disputesApi, reviews as reviewsApi, wallet as walletApi } from '../api/client';
+import { seller as sellerApi, admin as adminApi, coupons as couponsApi, disputes as disputesApi, reviews as reviewsApi, wallet as walletApi, categories as categoriesApi } from '../api/client';
 import toast from 'react-hot-toast';
 import {
   FiPackage, FiDollarSign, FiShoppingBag, FiClock,
-  FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload, FiRefreshCw,
+  FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload, FiUploadCloud, FiRefreshCw,
   FiExternalLink, FiChevronLeft, FiChevronRight, FiAlertTriangle, FiHome, FiStar, FiInfo, FiImage, FiMessageSquare, FiUser, FiLogOut,
   FiMenu, FiMonitor, FiSmartphone, FiDatabase, FiHeadphones, FiPercent, FiSettings, FiShield,
   FiTag, FiCopy, FiShare2, FiSend, FiCalendar, FiCheckCircle, FiEye, FiLayers, FiFilter, FiSearch, FiGlobe, FiCreditCard, FiList, FiLifeBuoy
@@ -432,16 +431,21 @@ export default function SellerDashboardPage() {
   };
 
   const handleProductImageFileUpload = async (e) => {
-    const file = e.target.files?.[0];
+    const file = e.target?.files?.[0] || e;
     if (!file) return;
+    if (file.type && !file.type.startsWith('image/')) {
+      toast.error(isKhmer ? 'សូមជ្រើសរើស File រូបភាពប៉ុណ្ណោះ' : 'Please select an image file');
+      return;
+    }
     const formData = new FormData();
     formData.append('file', file);
     setUploadingProductImg(true);
     try {
       const res = await sellerApi.uploadImage(formData);
-      const url = res.data?.url || res.data;
-      setProductForm(f => ({ ...f, imageUrl: url }));
-      toast.success('Product image uploaded!');
+      const url = res.data?.data || res.data?.url || res.data || res;
+      const cleanUrl = normalizeImageUrl(typeof url === 'string' ? url : '');
+      setProductForm(f => ({ ...f, imageUrl: cleanUrl }));
+      toast.success(isKhmer ? 'បាន Upload រូបភាពជោគជ័យ!' : 'Product image uploaded!');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Image upload failed');
     } finally {
@@ -462,7 +466,7 @@ export default function SellerDashboardPage() {
         sellerApi.getProfile(),
         sellerApi.getProducts(),
         sellerApi.getWithdrawHistory(),
-        fetch('/api/categories/').then(r => r.json()),
+        categoriesApi.getAll(),
         sellerApi.getOrders(),
         couponsApi.getSellerCoupons(),
         disputesApi.getSellerDisputes(),
@@ -479,7 +483,10 @@ export default function SellerDashboardPage() {
         setProducts(sortedNewest);
       }
       if (withdrawRes.status === 'fulfilled') setWithdrawals(withdrawRes.value.data || []);
-      if (catsRes.status === 'fulfilled') setCategories(catsRes.value?.data || []);
+      if (catsRes.status === 'fulfilled') {
+        const cList = Array.isArray(catsRes.value.data) ? catsRes.value.data : (catsRes.value.data?.data || []);
+        setCategories(cList);
+      }
       if (ordersRes.status === 'fulfilled') setOrders(ordersRes.value.data || []);
       if (couponsRes.status === 'fulfilled') setCouponsList(Array.isArray(couponsRes.value.data) ? couponsRes.value.data : []);
       if (disputesRes.status === 'fulfilled') setDisputesList(Array.isArray(disputesRes.value.data) ? disputesRes.value.data : []);
@@ -1842,29 +1849,133 @@ export default function SellerDashboardPage() {
  </select>
  </div>
 
- {/* 5. Product Image & Upload */}
+ {/* 5. Product Image & Upload (No raw URL displayed) */}
  <div>
  <label style={{ fontSize: '0.78rem', color: 'var(--admin-text)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
- <FiImage size={14} /> Product Image
+ <FiImage size={14} /> {isKhmer ? 'រូបភាពផលិតផល (Product Image)' : 'Product Image'}
  </label>
- <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
- <label className="admin-btn admin-btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontSize: '0.82rem', padding: '10px 16px', borderRadius: 10 }}>
- <FiUpload size={14} /> {uploadingProductImg ? 'Uploading...' : 'Upload'}
- <input type="file" accept="image/*" onChange={handleProductImageFileUpload} hidden disabled={uploadingProductImg} />
- </label>
+
  <input
- className="admin-input"
- placeholder="or paste image URL"
- value={productForm.imageUrl}
- onChange={e => setProductForm(f => ({ ...f, imageUrl: e.target.value }))}
- id="seller-product-img"
- style={{ flex: 1, padding: '10px 14px', borderRadius: 10, fontSize: '0.85rem' }}
+ type="file"
+ accept="image/*"
+ id="seller-product-file-input"
+ onChange={handleProductImageFileUpload}
+ style={{ display: 'none' }}
+ disabled={uploadingProductImg}
+ />
+
+ {productForm.imageUrl ? (
+ /* When image exists: Show clean visual preview + Change / Remove buttons */
+ <div style={{
+ display: 'flex',
+ alignItems: 'center',
+ gap: 14,
+ padding: '12px 14px',
+ background: 'rgba(255, 255, 255, 0.04)',
+ border: '1px solid rgba(255, 255, 255, 0.1)',
+ borderRadius: 12,
+ marginBottom: 10
+ }}>
+ <div style={{
+ width: 64,
+ height: 64,
+ borderRadius: 10,
+ overflow: 'hidden',
+ background: 'rgba(0, 0, 0, 0.4)',
+ display: 'flex',
+ alignItems: 'center',
+ justifyContent: 'center',
+ flexShrink: 0,
+ border: '1px solid rgba(255, 255, 255, 0.15)'
+ }}>
+ <img
+ src={normalizeImageUrl(productForm.imageUrl)}
+ alt="Product Preview"
+ style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+ onError={e => { e.target.style.display = 'none'; }}
  />
  </div>
 
+ <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+ <div style={{ fontSize: '0.82rem', color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+ <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
+ {isKhmer ? 'រូបភាពរួចរាល់' : 'Image Ready'}
+ </div>
+ <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+ <button
+ type="button"
+ className="admin-btn admin-btn-secondary admin-btn-sm"
+ onClick={() => document.getElementById('seller-product-file-input')?.click()}
+ disabled={uploadingProductImg}
+ style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.76rem', padding: '5px 10px', borderRadius: 8 }}
+ >
+ <FiUpload size={12} /> {uploadingProductImg ? (isKhmer ? 'កំពុង Upload...' : 'Uploading...') : (isKhmer ? 'ប្ដូររូបភាព' : 'Change Image')}
+ </button>
+ <button
+ type="button"
+ className="admin-btn admin-btn-danger admin-btn-sm"
+ onClick={() => setProductForm(f => ({ ...f, imageUrl: '' }))}
+ disabled={uploadingProductImg}
+ style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.76rem', padding: '5px 10px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)' }}
+ >
+ <FiTrash2 size={12} /> {isKhmer ? 'លុបរូបភាព' : 'Remove'}
+ </button>
+ </div>
+ </div>
+ </div>
+ ) : (
+ /* When no image: Show modern Drag & Drop / Click to Import Box */
+ <div
+ onClick={() => document.getElementById('seller-product-file-input')?.click()}
+ style={{
+ border: '2px dashed rgba(99, 102, 241, 0.4)',
+ borderRadius: 12,
+ padding: '18px 14px',
+ textAlign: 'center',
+ cursor: 'pointer',
+ background: 'rgba(99, 102, 241, 0.04)',
+ transition: 'all 0.2s ease',
+ display: 'flex',
+ flexDirection: 'column',
+ alignItems: 'center',
+ justifyContent: 'center',
+ gap: 6,
+ marginBottom: 10
+ }}
+ onDragOver={e => e.preventDefault()}
+ onDrop={e => {
+ e.preventDefault();
+ if (e.dataTransfer.files?.[0]) {
+ handleProductImageFileUpload(e.dataTransfer.files[0]);
+ }
+ }}
+ >
+ <div style={{
+ width: 38,
+ height: 38,
+ borderRadius: '50%',
+ background: 'rgba(99, 102, 241, 0.15)',
+ display: 'flex',
+ alignItems: 'center',
+ justifyContent: 'center',
+ color: '#818cf8'
+ }}>
+ <FiUploadCloud size={20} />
+ </div>
+ <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.84rem' }}>
+ {uploadingProductImg ? (isKhmer ? 'កំពុង Upload រូបភាព...' : 'Uploading image...') : (isKhmer ? 'ចុចទីនេះដើម្បី Upload រូបភាពពីកុំព្យូទ័រ' : 'Click to import product image')}
+ </div>
+ <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)' }}>
+ {isKhmer ? 'PNG, JPG, WEBP, GIF (រហូតដល់ 10MB)' : 'PNG, JPG, WEBP, GIF (up to 10MB)'}
+ </div>
+ </div>
+ )}
+
  {/* Quick-pick Preset Images */}
- <div style={{ marginTop: 10 }}>
- <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, marginBottom: 6 }}>Quick-pick:</div>
+ <div>
+ <div style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)', fontWeight: 700, marginBottom: 6 }}>
+ {isKhmer ? 'ឬជ្រើសរើស Logo គំរូ (Quick-pick):' : 'Or quick-pick brand logo:'}
+ </div>
  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
  {[
  { name: 'Netflix', url: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=400&q=80' },
@@ -1879,10 +1990,10 @@ export default function SellerDashboardPage() {
  type="button"
  onClick={() => setProductForm(f => ({ ...f, imageUrl: img.url }))}
  style={{
- background: productForm.imageUrl === img.url ? 'rgba(16,185,129,0.12)' : '#F8FAFC',
- border: productForm.imageUrl === img.url ? '1.5px solid #10B981' : '1px solid #CBD5E1',
+ background: productForm.imageUrl === img.url ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.05)',
+ border: productForm.imageUrl === img.url ? '1.5px solid #10B981' : '1px solid rgba(255,255,255,0.1)',
  borderRadius: 8, padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700,
- color: productForm.imageUrl === img.url ? '#059669' : '#475569', cursor: 'pointer',
+ color: productForm.imageUrl === img.url ? '#34D399' : 'var(--admin-text-secondary)', cursor: 'pointer',
  display: 'flex', alignItems: 'center', gap: 4
  }}
  >

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { seller as sellerApi, admin as adminApi } from '../api/client';
+import { seller as sellerApi } from '../api/client';
 import { useLanguage } from '../context/LanguageContext';
+import { normalizeImageUrl } from '../utils/imageUrl';
 import toast from 'react-hot-toast';
 import { FiX, FiDollarSign, FiAlertTriangle, FiUpload, FiCheck } from 'react-icons/fi';
 
@@ -29,9 +30,10 @@ export default function SellerWithdrawModal({ balance = 0, onClose, onSuccess })
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await adminApi.uploadImage(formData);
-      const url = res.data?.data || res.data || res;
-      setKhqrImageUrl(url);
+      const res = await sellerApi.uploadImage(formData);
+      const url = res.data?.data || res.data?.url || res.data || res;
+      const cleanUrl = normalizeImageUrl(typeof url === 'string' ? url : '');
+      setKhqrImageUrl(cleanUrl);
       setConfirmed(false);
       toast.success(isKhmer ? 'បានបញ្ចូលរូបភាព KHQR ជោគជ័យ!' : 'KHQR picture uploaded!');
     } catch (err) {
@@ -186,7 +188,7 @@ export default function SellerWithdrawModal({ balance = 0, onClose, onSuccess })
             {khqrImageUrl ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 60, height: 60, borderRadius: 10, overflow: 'hidden', border: '2px solid #10b981', background: '#000', flexShrink: 0 }}>
-                  <img src={khqrImageUrl} alt="KHQR Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <img src={normalizeImageUrl(khqrImageUrl)} alt="KHQR Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>

@@ -3,6 +3,7 @@ import { admin as adminApi } from '../../api/client';
 import { FiRefreshCw, FiCheck, FiX, FiDollarSign, FiClock, FiCheckCircle, FiTrendingUp } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { normalizeImageUrl } from '../../utils/imageUrl';
 
 const StatusBadge = ({ status, isKhmer }) => {
   const map = {
@@ -243,7 +244,7 @@ export default function WithdrawalsManage() {
  }}
  title="Click to view QR Code picture"
  >
- <img src={w.khqrImageUrl} alt="KHQR Code" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+ <img src={normalizeImageUrl(w.khqrImageUrl)} alt="KHQR Code" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
  </div>
  )}
  {w.khqrString && (
@@ -349,10 +350,10 @@ export default function WithdrawalsManage() {
  onClick={() => setPreviewImage(null)}
  style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', color: '#ffffff', fontSize: '1.4rem', cursor: 'pointer' }}
  >
- 
+ &times;
  </button>
  <h4 style={{ color: '#ffffff', margin: '0 0 12px 0', fontSize: '1rem', fontWeight: 700 }}>Seller KHQR Code Picture</h4>
- <img src={previewImage} alt="KHQR Full Code" style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 12 }} />
+ <img src={normalizeImageUrl(previewImage)} alt="KHQR Full Code" style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 12 }} />
  <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: 12, margin: '12px 0 0 0' }}>Scan with Bakong or any mobile banking app to send payout</p>
  </div>
  </div>
