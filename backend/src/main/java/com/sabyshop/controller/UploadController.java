@@ -61,6 +61,7 @@ public class UploadController {
             Path file = resolveUploadFile(filename);
             if (file != null && Files.exists(file) && Files.isRegularFile(file)) {
                 Resource resource = new UrlResource(file.toUri());
+                if (resource.exists() && resource.isReadable()) {
                     String contentType = Files.probeContentType(file);
                     if (contentType == null || contentType.equals(MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
                         String lowerName = filename.toLowerCase();
