@@ -1,0 +1,43 @@
+# Build outputs & dependencies
+target/
+**/target/
+backend/target/
+backend/uploads/
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Logs & temp
+*.log
+*.tmp
+*.db
+*.sqlite
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ===== SECRETS — NEVER COMMIT THESE =====
+# Backend secrets
+**/application.properties
+**/application-local.properties
+**/application-prod.properties
+**/application-secret.properties
+# Frontend secrets
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+.env
+.env.local
+.env.production
+*credentials*.txt
+aba_payway_credentials.txt
+

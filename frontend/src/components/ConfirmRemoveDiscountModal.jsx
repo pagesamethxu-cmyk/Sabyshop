@@ -1,0 +1,273 @@
+import React from 'react';
+import { FiAlertTriangle, FiX, FiTrash2, FiPackage, FiPercent } from 'react-icons/fi';
+import { useLanguage } from '../context/LanguageContext';
+
+/**
+ * ConfirmRemoveDiscountModal
+ * Displays a confirmation dialog when removing/deleting a direct product discount.
+ * Supports Khmer and English languages, and previews the product & discount details.
+ */
+const ConfirmRemoveDiscountModal = ({ isOpen, product, onClose, onConfirm, loading }) => {
+  const { lang, isKhmer: ctxIsKhmer } = useLanguage();
+  const isKhmer = ctxIsKhmer || lang === 'km';
+
+  if (!isOpen || !product) return null;
+
+  const origP = product.originalPrice
+    ? parseFloat(product.originalPrice).toFixed(2)
+    : parseFloat(product.basePrice || product.price || 0).toFixed(2);
+  const currentP = parseFloat(product.basePrice || product.price || 0).toFixed(2);
+  const pct = parseFloat(origP) > parseFloat(currentP) && parseFloat(origP) > 0
+    ? Math.round(((parseFloat(origP) - parseFloat(currentP)) / parseFloat(origP)) * 100)
+    : 0;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+        background: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px'
+      }}
+      onClick={(e) => e.target === e.currentTarget && !loading && onClose()}
+    >
+      <div
+        style={{
+          background: 'var(--card-bg, #FFFFFF)',
+          color: 'var(--text, #0F172A)',
+          borderRadius: 24,
+          width: '100%',
+          maxWidth: 460,
+          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.35)',
+          border: '1px solid var(--border, #E2E8F0)',
+          overflow: 'hidden',
+          padding: '28px 24px',
+          textAlign: 'center',
+          position: 'relative',
+          animation: 'adminModalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          disabled={loading}
+          aria-label="Close"
+          style={{
+            position: 'absolute',
+            top: 18,
+            right: 18,
+            background: 'none',
+            border: 'none',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            color: 'var(--text-light, #94A3B8)',
+            padding: 6,
+            borderRadius: 8
+          }}
+        >
+          <FiX size={18} />
+        </button>
+
+        {/* Warning Icon with Red Glow */}
+        <div
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: '50%',
+            background: 'rgba(239, 68, 68, 0.12)',
+            color: '#EF4444',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            boxShadow: '0 8px 24px rgba(239, 68, 68, 0.2)'
+          }}
+        >
+          <FiAlertTriangle size={32} />
+        </div>
+
+        {/* Title */}
+        <h3
+          style={{
+            margin: '0 0 12px',
+            fontSize: '1.25rem',
+            fontWeight: 900,
+            color: 'var(--text, #0F172A)'
+          }}
+        >
+          {isKhmer ? 'តើអ្នកប្រាកដជាចង់លុបការបញ្ចុះតម្លៃនេះ?' : 'Remove Product Discount?'}
+        </h3>
+
+        {/* Product Discount Preview Card */}
+        <div
+          style={{
+            background: 'var(--bg-secondary, #F8FAFC)',
+            border: '1px solid var(--border, #E2E8F0)',
+            borderRadius: 16,
+            padding: '12px 14px',
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            textAlign: 'left'
+          }}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 10,
+              background: '#E2E8F0',
+              overflow: 'hidden',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {product.imageUrl ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <FiPackage size={22} color="#64748B" />
+            )}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontWeight: 800,
+                fontSize: '0.95rem',
+                color: 'var(--text, #0F172A)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {product.name}
+            </div>
+            <div
+              style={{
+                fontSize: '0.82rem',
+                color: 'var(--text-light, #64748B)',
+                marginTop: 4,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                flexWrap: 'wrap'
+              }}
+            >
+              <span style={{ fontWeight: 800, color: '#EF4444' }}>${currentP}</span>
+              {parseFloat(origP) > parseFloat(currentP) && (
+                <span style={{ textDecoration: 'line-through', opacity: 0.65, fontSize: '0.78rem' }}>
+                  ${origP}
+                </span>
+              )}
+              {pct > 0 && (
+                <span
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: '#EF4444',
+                    padding: '1px 6px',
+                    borderRadius: 6,
+                    fontSize: '0.72rem',
+                    fontWeight: 800
+                  }}
+                >
+                  -{pct}% OFF
+                </span>
+              )}
+              {product.productLabel && product.productLabel !== 'NONE' && (
+                <span
+                  style={{
+                    background: 'rgba(236,72,153,0.12)',
+                    color: '#DB2777',
+                    padding: '1px 6px',
+                    borderRadius: 6,
+                    fontSize: '0.72rem',
+                    fontWeight: 800
+                  }}
+                >
+                  {product.productLabel}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Warning Details Message */}
+        <p
+          style={{
+            margin: '0 0 24px',
+            fontSize: '0.86rem',
+            color: 'var(--text-light, #64748B)',
+            lineHeight: 1.6
+          }}
+        >
+          {isKhmer
+            ? `ការលុបការបញ្ចុះតម្លៃនេះ នឹងស្ដារតម្លៃទំនិញមកតម្លៃដើម ($${origP}) វិញ ហើយស្លាកសញ្ញាបញ្ចុះតម្លៃ (${product.productLabel || 'PROMO'}) នឹងត្រូវដកចេញពីហាង។`
+            : `Removing this discount will restore the product price to its original $${origP} and remove the promotional badge from your store.`}
+        </p>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            style={{
+              flex: 1,
+              padding: '11px 18px',
+              borderRadius: 12,
+              border: '1px solid var(--border, #CBD5E1)',
+              background: 'transparent',
+              color: 'var(--text-light, #64748B)',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isKhmer ? 'បោះបង់' : 'Cancel'}
+          </button>
+
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={loading}
+            style={{
+              flex: 1.2,
+              padding: '11px 18px',
+              borderRadius: 12,
+              border: 'none',
+              background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: loading ? 'wait' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)'
+            }}
+          >
+            <FiTrash2 size={16} />
+            <span>
+              {loading
+                ? (isKhmer ? 'កំពុងលុប...' : 'Removing...')
+                : (isKhmer ? 'បញ្ជាក់ការលុប' : 'Confirm Remove')}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ConfirmRemoveDiscountModal;

@@ -1,0 +1,232 @@
+# ════════════════════════════════════════════════════════════════════════════
+#  Docker Compose — Full Architecture Stack
+#
+#  Architecture (from lecture):
+#
+#  100,000 req/min
+#        ↓
+#  [Nginx :80]  ← Load Balancer + Rate Limit
+#        ↓
+#  ┌───────────┬───────────┬───────────┐
+#  │ Server 1  │ Server 2  │ Server 3  │  ← Spring Boot instances
+#  │  :8081    │  :8082    │  :8083    │
+#  └───────────┴───────────┴───────────┘
+#        ↓
+#  [Redis :6379]  ← Cache + Distributed Rate Limit
+#        ↓
+#  [PostgreSQL :5432]  ← Database
+#
+#  Usage:
+#    Start:   docker-compose up -d
+#    Stop:    docker-compose down
+#    Logs:    docker-compose logs -f
+#    Scale:   docker-compose up -d --scale spring-app=5
+# ════════════════════════════════════════════════════════════════════════════
+
+version: '3.9'
+
+# ── Shared environment for all Spring Boot instances ─────────────────────────
+x-spring-common: &spring-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  networks:
+    - sabyshop-net
+  volumes:
+    - uploads-data:/app/uploads
+  environment:
+    # Database
+    DB_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-digital_store}
+    DB_DRIVER:   org.postgresql.Driver
+    DB_USERNAME: ${POSTGRES_USER:-postgres}
+    DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    # Redis
+    REDIS_HOST:     redis
+    REDIS_PORT:     6379
+    REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    # JWT & App
+    JWT_SECRET:         ${JWT_SECRET:-change_this_secret_min_32_chars_long}
+    APP_BASE_URL:       ${APP_BASE_URL:-http://localhost}
+    APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-http://localhost:5173}
+    # Admin
+    ADMIN_EMAIL:    ${ADMIN_EMAIL:-korbsameth.dev@gmail.com}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Sa1234@1234}
+    # Mail
+    MAIL_USERNAME: ${MAIL_USERNAME:-}
+    MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+    # Other
+    BAKONG_API_TOKEN:   ${BAKONG_API_TOKEN:-}
+    RESEND_API_KEY:     ${RESEND_API_KEY:-}
+    HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+  healthcheck:
+    test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/api/products"]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+    start_period: 90s
+
+# ── Services ─────────────────────────────────────────────────────────────────
+services:
+
+  # ── Nginx Load Balancer ───────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: sabyshop-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - spring-app-1
+      - spring-app-2
+      - spring-app-3
+    networks:
+      - sabyshop-net
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/nginx-health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Spring Boot — Server 1 ────────────────────────────────────────────────
+  spring-app-1:
+    <<: *spring-common
+    container_name: sabyshop-server-1
+    environment:
+      SERVER_INSTANCE: server-1
+      DB_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-digital_store}
+      DB_DRIVER:   org.postgresql.Driver
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET:         ${JWT_SECRET:-change_this_secret_min_32_chars_long}
+      APP_BASE_URL:       ${APP_BASE_URL:-http://localhost}
+      APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-http://localhost:5173}
+      ADMIN_EMAIL:    ${ADMIN_EMAIL:-korbsameth.dev@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Sa1234@1234}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      BAKONG_API_TOKEN:   ${BAKONG_API_TOKEN:-}
+      RESEND_API_KEY:     ${RESEND_API_KEY:-}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+    ports:
+      - "8081:8080"
+
+  # ── Spring Boot — Server 2 ────────────────────────────────────────────────
+  spring-app-2:
+    <<: *spring-common
+    container_name: sabyshop-server-2
+    environment:
+      SERVER_INSTANCE: server-2
+      DB_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-digital_store}
+      DB_DRIVER:   org.postgresql.Driver
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET:         ${JWT_SECRET:-change_this_secret_min_32_chars_long}
+      APP_BASE_URL:       ${APP_BASE_URL:-http://localhost}
+      APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-http://localhost:5173}
+      ADMIN_EMAIL:    ${ADMIN_EMAIL:-korbsameth.dev@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Sa1234@1234}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      BAKONG_API_TOKEN:   ${BAKONG_API_TOKEN:-}
+      RESEND_API_KEY:     ${RESEND_API_KEY:-}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+    ports:
+      - "8082:8080"
+
+  # ── Spring Boot — Server 3 ────────────────────────────────────────────────
+  spring-app-3:
+    <<: *spring-common
+    container_name: sabyshop-server-3
+    environment:
+      SERVER_INSTANCE: server-3
+      DB_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-digital_store}
+      DB_DRIVER:   org.postgresql.Driver
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET:         ${JWT_SECRET:-change_this_secret_min_32_chars_long}
+      APP_BASE_URL:       ${APP_BASE_URL:-http://localhost}
+      APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-http://localhost:5173}
+      ADMIN_EMAIL:    ${ADMIN_EMAIL:-korbsameth.dev@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Sa1234@1234}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      BAKONG_API_TOKEN:   ${BAKONG_API_TOKEN:-}
+      RESEND_API_KEY:     ${RESEND_API_KEY:-}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+    ports:
+      - "8083:8080"
+
+  # ── Redis (Cache + Distributed Rate Limiter) ──────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: sabyshop-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    ports:
+      - "6379:6379"
+    networks:
+      - sabyshop-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis-data:/data
+
+  # ── PostgreSQL Database ───────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: sabyshop-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-digital_store}
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    networks:
+      - sabyshop-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-digital_store}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  sabyshop-net:
+    driver: bridge
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  uploads-data:
+    driver: local

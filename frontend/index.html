@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="km">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SABY SHOP - Trusted Marketplace for Game Keys, Items, Accounts, Gift Cards. Instant 0-second digital delivery with Bakong KHQR verification." />
+    <title>SABY SHOP | Trusted Marketplace for Game Keys, Items, Accounts, Gift</title>
+    <!-- Google Fonts: Chakra Petch (Square/Angular English font) + Battambang (Khmer OS Battambang) for Khmer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Battambang:wght@400;700;900&display=swap" rel="stylesheet" />
+
+    <script>
+      window.addEventListener('error', function(e) {
+        var div = document.createElement('div');
+        div.style.position = 'fixed';
+        div.style.top = '0';
+        div.style.left = '0';
+        div.style.width = '100%';
+        div.style.backgroundColor = '#ef4444';
+        div.style.color = '#ffffff';
+        div.style.padding = '12px';
+        div.style.zIndex = '999999';
+        div.style.fontSize = '14px';
+        div.style.fontWeight = 'bold';
+        div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        div.style.wordBreak = 'break-all';
+        div.innerHTML = 'Javascript Error: ' + e.message + ' (' + e.filename + ':' + e.lineno + ')';
+        document.body.appendChild(div);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        var div = document.createElement('div');
+        div.style.position = 'fixed';
+        div.style.top = '50px';
+        div.style.left = '0';
+        div.style.width = '100%';
+        div.style.backgroundColor = '#f97316';
+        div.style.color = '#ffffff';
+        div.style.padding = '12px';
+        div.style.zIndex = '999999';
+        div.style.fontSize = '14px';
+        div.style.fontWeight = 'bold';
+        div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        div.style.wordBreak = 'break-all';
+        div.innerHTML = 'Promise Rejection: ' + e.reason;
+        document.body.appendChild(div);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

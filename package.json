@@ -1,0 +1,14 @@
+{
+  "name": "digital-store",
+  "version": "1.0.0",
+  "scripts": {
+    "backend": "cd backend && java -jar target/digital-store-backend-0.0.1-SNAPSHOT.jar",
+    "backend:dev": "cd backend && mvn spring-boot:run",
+    "bot": "cd telegram_bot && python bot.py",
+    "frontend": "cd frontend && npm run dev",
+    "start:all": "start-all.bat"
+  },
+  "dependencies": {
+    "bakong-khqr": "^1.0.20"
+  }
+}

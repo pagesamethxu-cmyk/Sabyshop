@@ -1,0 +1,17 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${spring.mail.username}
+    password: ${spring.mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+telegram:
+  bot:
+    token: "8939523816:AAHvOjdFZYG8EN68RO0OZ5JuenIy_TWFkvE"
+    username: "SabyShopBot"
+    adminChatId: "YOUR_ADMIN_CHAT_ID"
