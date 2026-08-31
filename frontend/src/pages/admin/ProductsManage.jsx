@@ -9,6 +9,7 @@ import { DIGITAL_PRODUCT_TYPES, PRODUCT_DURATIONS, PRODUCT_LABELS, getCategoryTy
 import ConfirmDeleteProductModal from '../../components/ConfirmDeleteProductModal';
 import toast from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { normalizeImageUrl } from '../../utils/imageUrl';
 
 const ProductsManage = () => {
   const { isKhmer } = useLanguage();
@@ -42,11 +43,13 @@ const ProductsManage = () => {
     setLoading(true);
     try {
       const [prodRes, catRes] = await Promise.all([
-        productsApi.getAll(),
+        productsApi.getAllAdmin ? productsApi.getAllAdmin() : productsApi.getAll(),
         categoriesApi.getAll(),
       ]);
-      setProducts(Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data ? [prodRes.data] : []));
-      setCategories(Array.isArray(catRes.data) ? catRes.data : (catRes.data ? [catRes.data] : []));
+      const prodList = Array.isArray(prodRes.data) ? prodRes.data : prodRes.data?.data || [];
+      const catList = Array.isArray(catRes.data) ? catRes.data : catRes.data?.data || [];
+      setProducts(prodList);
+      setCategories(catList);
     } catch (err) {
       console.error('Fetch error:', err);
       toast.error('Failed to load products/categories: ' + (err.response?.data?.message || err.message));
@@ -90,16 +93,25 @@ const ProductsManage = () => {
 
   const handleImageUpload = async (file) => {
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error(isKhmer ? 'សូមជ្រើសរើស File រូបភាពប៉ុណ្ណោះ' : 'Please select an image file');
+      return;
+    }
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const res = await adminApi.uploadImage(fd);
-      const url = res.data?.data || res.data;
-      setFormData(prev => ({ ...prev, imageUrl: 'http://localhost:8080' + url }));
-      toast.success('Image uploaded!');
-    } catch { toast.error('Image upload failed'); }
-    finally { setUploading(false); }
+      const url = res.data?.data || res.data?.url || res.data || res;
+      const cleanUrl = normalizeImageUrl(typeof url === 'string' ? url : '');
+      setFormData(prev => ({ ...prev, imageUrl: cleanUrl }));
+      toast.success(isKhmer ? 'បាន Upload រូបភាពជោគជ័យ!' : 'Image uploaded successfully!');
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast.error(isKhmer ? 'មិនអាច Upload រូបភាពបានទេ' : 'Image upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -192,7 +204,7 @@ const ProductsManage = () => {
                     <div className="admin-product-cell">
                       <div className="admin-product-avatar">
                         {p.imageUrl
-                          ? <img src={p.imageUrl} alt={p.name} />
+                          ? <img src={normalizeImageUrl(p.imageUrl)} alt={p.name} onError={e => { e.target.style.display = 'none'; }} />
                           : <span>{(p.name || '?')[0]}</span>
                         }
                       </div>
@@ -355,23 +367,23 @@ const ProductsManage = () => {
 
               {/* Image */}
               <div className="admin-form-group">
-                <label className="admin-form-label"><FiImage style={{ marginRight: 6 }} />Product Image</label>
-                <div className="admin-image-upload">
+                <label className="admin-form-label"><FiImage style={{ marginRight: 6 }} />{isKhmer ? 'រូបភាពផលិតផល (Product Image)' : 'Product Image'}</label>
+                <div className="admin-image-upload" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                   <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
                     onChange={e => handleImageUpload(e.target.files[0])} />
-                  <button type="button" className="admin-btn admin-btn-outline admin-btn-sm"
-                    onClick={() => fileRef.current?.click()} disabled={uploading}>
-                    <FiUpload size={13} /> {uploading ? 'Uploading...' : 'Upload'}
+                  <button type="button" className="admin-btn admin-btn-primary admin-btn-sm"
+                    onClick={() => fileRef.current?.click()} disabled={uploading} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontWeight: 600 }}>
+                    <FiUpload size={14} /> {uploading ? (isKhmer ? 'កំពុង Upload...' : 'Uploading...') : (isKhmer ? 'Upload រូបភាពពីកុំព្យូទ័រ' : 'Upload Image from Device')}
                   </button>
-                  <input className="admin-input" type="text" placeholder="or paste image URL"
+                  <input className="admin-input" type="text" placeholder={isKhmer ? 'ឬដាក់ Link រូបភាព' : 'or paste image URL'}
                     value={formData.imageUrl}
                     onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
-                    style={{ flex: 1 }} />
+                    style={{ flex: 1, minWidth: 200 }} />
                 </div>
 
                 {/* Stock image picker */}
                 <div style={{ marginTop: 10 }}>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: 6 }}>Quick-pick:</label>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: 6 }}>{isKhmer ? 'ជ្រើសរើសរូបភាពគំរូលឿន (Quick-pick):' : 'Quick-pick:'}</label>
                   <div className="admin-stock-images">
                     {stockImages.map(img => (
                       <button key={img.name} type="button"
@@ -386,8 +398,9 @@ const ProductsManage = () => {
                 </div>
 
                 {formData.imageUrl && (
-                  <div className="admin-image-preview">
-                    <img src={formData.imageUrl} alt="Preview"
+                  <div className="admin-image-preview" style={{ marginTop: 12, padding: 8, background: 'rgba(255, 255, 255, 0.05)', borderRadius: 8, display: 'inline-block' }}>
+                    <img src={normalizeImageUrl(formData.imageUrl)} alt="Preview"
+                      style={{ maxHeight: 100, borderRadius: 6, objectFit: 'cover' }}
                       onError={e => { e.target.style.display = 'none'; }} />
                   </div>
                 )}

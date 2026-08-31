@@ -19,12 +19,14 @@ const BRAND_ICONS = {
   adobe: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%23FF0000"/><path d="M19 12H13V36H19V12ZM29 12H35V36H29V12ZM21 21L27 36H21V21Z" fill="white"/></svg>`
 };
 
+import { normalizeImageUrl } from './imageUrl';
+
 /**
  * Resolves an image URL for a given product name and custom imageUrl.
  * Returns custom imageUrl if valid, or static local path /images/products/ for known brands.
  */
 export const getProductImageUrl = (name = '', imageUrl = '') => {
-  if (imageUrl && imageUrl.trim()) return imageUrl;
+  if (imageUrl && imageUrl.trim()) return normalizeImageUrl(imageUrl);
 
   const lower = (name || '').toLowerCase();
 

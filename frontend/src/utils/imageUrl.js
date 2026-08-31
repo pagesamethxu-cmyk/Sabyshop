@@ -1,6 +1,18 @@
 /**
- * Utility functions for safely handling and normalizing image and attachment URLs across the application.
+ * Gets the backend origin (e.g. "https://api.sabyshop.com") from VITE_API_URL.
  */
+export const getBackendOrigin = () => {
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+  if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {
+    try {
+      const parsed = new URL(apiUrl);
+      return parsed.origin;
+    } catch {
+      return '';
+    }
+  }
+  return '';
+};
 
 /**
  * Normalizes any image or attachment URL into a valid accessible path.
@@ -9,7 +21,14 @@
  */
 export const normalizeImageUrl = (url) => {
   if (!url || typeof url !== 'string') return '';
-  const trimmed = url.trim();
+  let trimmed = url.trim();
+
+  // If contains http://localhost:8080 or http://127.0.0.1:8080, replace with live backend origin in production
+  const origin = getBackendOrigin();
+  if (origin && (trimmed.startsWith('http://localhost:8080') || trimmed.startsWith('http://127.0.0.1:8080'))) {
+    trimmed = trimmed.replace(/^http:\/\/(localhost|127\.0\.0\.1):8080/, origin);
+    return trimmed;
+  }
 
   // If already absolute or special URI scheme
   if (
@@ -21,36 +40,33 @@ export const normalizeImageUrl = (url) => {
     return trimmed;
   }
 
-  // Already prefixed API routes
+  // Already prefixed API routes or uploads -> prepend backend origin if available
   if (
     trimmed.startsWith('/api/admin/uploads/') ||
     trimmed.startsWith('/api/seller/uploads/') ||
     trimmed.startsWith('/api/uploads/') ||
-    trimmed.startsWith('/api/chat/attachments/')
+    trimmed.startsWith('/api/chat/attachments/') ||
+    trimmed.startsWith('/uploads/')
   ) {
-    return trimmed;
+    return origin ? `${origin}${trimmed}` : trimmed;
   }
 
-  // If starts with /uploads/ or uploads/
-  if (trimmed.startsWith('/uploads/')) {
-    return trimmed;
-  }
   if (trimmed.startsWith('uploads/')) {
-    return '/' + trimmed;
+    return origin ? `${origin}/${trimmed}` : `/${trimmed}`;
   }
 
   // If starts with /api/
   if (trimmed.startsWith('/api/')) {
-    return trimmed;
+    return origin ? `${origin}${trimmed}` : trimmed;
   }
 
-  // If starts with leading slash /
+  // If starts with leading slash / (e.g. /images/products/...)
   if (trimmed.startsWith('/')) {
     return trimmed;
   }
 
   // Bare filename (e.g. chat_1787396477205_8a6d3af7.jpg or conv_1_178739_abc.png or uuid.jpg)
-  return `/uploads/${trimmed}`;
+  return origin ? `${origin}/uploads/${trimmed}` : `/uploads/${trimmed}`;
 };
 
 /**
