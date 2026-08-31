@@ -207,10 +207,10 @@ export default function SellerProfilePage() {
  </div>
 
  {/*  3-CARD DASHBOARD ROW  */}
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 20 }}>
+ <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 14, marginBottom: 20 }}>
 
  {/* CARD 1 — Store Stats */}
- <div className="card" style={{ padding: '20px', borderRadius: '18px', background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+ <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px)', borderRadius: '18px', background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text)', marginBottom: 12, borderBottom: '1px solid var(--border)', paddingBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
  <FiUsers size={15} color="#6366F1" />
  <span>{isKhmer ? 'ស្ថិតិប្រតិបត្តិការ' : 'Transaction Stats'}</span>

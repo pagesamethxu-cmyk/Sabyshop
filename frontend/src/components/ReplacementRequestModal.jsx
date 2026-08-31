@@ -359,7 +359,7 @@ const ReplacementRequestModal = ({ isOpen, onClose, order, onSuccess }) => {
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
               {isKhmer ? 'ជ្រើសរើសប្រភេទបញ្ហាដែលជួបប្រទះ *' : 'Select Issue Type *'}
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: 8 }}>
               {REPLACEMENT_REASONS.map(reason => {
                 const isSelected = selectedReasonId === reason.id;
                 return (

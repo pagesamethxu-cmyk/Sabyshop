@@ -349,16 +349,16 @@ const ProductPage = () => {
     <div className="product-page-container container" style={{ padding: '24px 16px 80px', maxWidth: '1180px', margin: '0 auto' }}>
       
       {/* Top Navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', gap: '8px', flexWrap: 'nowrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', gap: '8px', flexWrap: 'wrap' }}>
         <button
           onClick={() => navigate(-1)}
           className="btn btn-outline btn-sm"
-          style={{ border: '1px solid var(--border)', background: 'var(--card-bg)', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap', flexShrink: 0, padding: '6px 10px', fontSize: '0.8rem' }}
+          style={{ border: '1px solid var(--border)', background: 'var(--card-bg)', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px', flexShrink: 0, padding: '6px 12px', fontSize: '0.8rem', fontWeight: 700 }}
         >
-          <FiArrowLeft size={15} /> <span style={{ whiteSpace: 'nowrap' }}>{t('product.backToProducts')}</span>
+          <FiArrowLeft size={15} /> <span>{isKhmer ? 'ត្រឡប់ក្រោយ' : t('product.backToProducts')}</span>
         </button>
 
-        <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             onClick={handleWishlistToggle}
             style={{
@@ -377,7 +377,7 @@ const ProductPage = () => {
             }}
           >
             <FiHeart size={14} fill={isWishlisted ? '#EF4444' : 'none'} color={isWishlisted ? '#EF4444' : 'currentColor'} />
-            <span style={{ whiteSpace: 'nowrap' }}>{isWishlisted ? (isKhmer ? 'បានរក្សាទុក' : 'Saved') : (isKhmer ? 'ចំណូលចិត្ត' : 'Wishlist')}</span>
+            <span>{isWishlisted ? (isKhmer ? 'បានរក្សាទុក' : 'Saved') : (isKhmer ? 'ចំណូលចិត្ត' : 'Wishlist')}</span>
           </button>
           <button
             onClick={handleShare}
@@ -396,7 +396,7 @@ const ProductPage = () => {
               whiteSpace: 'nowrap'
             }}
           >
-            <FiShare2 size={14} /> <span style={{ whiteSpace: 'nowrap' }}>{isKhmer ? 'ចែករំលែក' : 'Share'}</span>
+            <FiShare2 size={14} /> <span>{isKhmer ? 'ចែករំលែក' : 'Share'}</span>
           </button>
         </div>
       </div>

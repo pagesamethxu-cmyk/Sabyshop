@@ -1264,14 +1264,15 @@ export default function SellerOnboardingPage() {
         }}>
           <div style={{
             background: '#ffffff', borderRadius: '24px', maxWidth: '400px', width: '95%',
-            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)', overflow: 'hidden', color: '#0f172a',
+            maxHeight: 'min(92vh, 680px)', overflowY: 'auto', display: 'flex', flexDirection: 'column',
+            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3)', color: '#0f172a',
             border: '1px solid #E2E8F0', animation: 'fadeInScale 0.3s ease-out'
           }}>
             {/* Clean White Header Top Bar */}
             <div style={{
-              background: '#ffffff', padding: '16px 20px', display: 'flex',
+              background: '#ffffff', padding: '14px 20px', display: 'flex',
               alignItems: 'center', justifyContent: 'space-between', color: '#0F2942',
-              borderBottom: '1px solid #E2E8F0'
+              borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 50
             }}>
               <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0F2942' }}>
                 {isKhmer ? `ទូទាត់ប្រាក់សម្រាប់កញ្ចប់ ${selectedPlan.name}` : `Payment for ${selectedPlan.name}`}
@@ -1279,12 +1280,14 @@ export default function SellerOnboardingPage() {
               <button
                 onClick={() => { setIsPaymentModalOpen(false); setPolling(false); }}
                 style={{
-                  background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '50%',
-                  width: '32px', height: '32px', color: '#475569', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                  background: '#FEE2E2', border: '1.5px solid #FCA5A5', borderRadius: '50%',
+                  width: '36px', height: '36px', color: '#DC2626', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(220, 38, 38, 0.15)', flexShrink: 0
                 }}
+                aria-label={isKhmer ? 'បិទផ្ទាំង' : 'Close'}
               >
-                <FiX size={18} />
+                <FiX size={20} />
               </button>
             </div>
 
@@ -1359,6 +1362,32 @@ export default function SellerOnboardingPage() {
                   {formatTime(timeLeft)}
                 </div>
               </div>
+
+              {/* Bottom Cancel & Close Button */}
+              <button
+                type="button"
+                onClick={() => { setIsPaymentModalOpen(false); setPolling(false); }}
+                style={{
+                  width: '100%',
+                  marginTop: '14px',
+                  borderRadius: '12px',
+                  border: '1px solid #CBD5E1',
+                  background: '#F8FAFC',
+                  color: '#475569',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  padding: '9px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiX size={15} />
+                <span>{isKhmer ? 'បោះបង់ និងបិទផ្ទាំង (Cancel & Close)' : 'Cancel & Close'}</span>
+              </button>
             </div>
           </div>
         </div>

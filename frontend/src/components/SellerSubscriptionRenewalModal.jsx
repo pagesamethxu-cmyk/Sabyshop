@@ -184,43 +184,52 @@ export default function SellerSubscriptionRenewalModal({ isOpen, onClose, onSucc
         }
         .payway-modal-card {
           width: 100%;
-          max-width: 460px;
+          max-width: 440px;
+          max-height: min(92vh, 680px);
           background: #ffffff;
           border-radius: 20px;
-          overflow: hidden;
+          overflow-y: auto;
           box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
           position: relative;
+          display: flex;
+          flex-direction: column;
         }
         .payway-dark-header {
           background: #ffffff;
-          padding: 18px 24px 10px 24px;
+          padding: 14px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           color: #0F2942;
-          border-top-left-radius: 20px;
-          border-top-right-radius: 20px;
+          border-bottom: 1px solid #E2E8F0;
+          position: sticky;
+          top: 0;
+          z-index: 50;
         }
         .payway-close-btn-top {
-          background: #F1F5F9;
-          border: 1px solid #E2E8F0;
-          color: #334155;
-          width: 34px;
-          height: 34px;
-          border-radius: 10px;
+          background: #FEE2E2;
+          border: 1.5px solid #FCA5A5;
+          color: #DC2626;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           transition: all 0.2s ease;
+          box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
+          flex-shrink: 0;
         }
         .payway-close-btn-top:hover {
-          background: #E2E8F0;
-          color: #0F172A;
+          background: #FCA5A5;
+          color: #991B1B;
+          transform: scale(1.05);
         }
         .payway-white-body {
-          padding: 24px 28px 28px;
+          padding: 18px 22px 24px;
           background: #ffffff;
+          flex: 1;
         }
         .payway-khqr-ticket {
           width: 100%;
@@ -493,6 +502,32 @@ export default function SellerSubscriptionRenewalModal({ isOpen, onClose, onSucc
                   {formatTime(timeLeft)}
                 </div>
               </div>
+
+              {/* Bottom Cancel & Close Button */}
+              <button
+                type="button"
+                onClick={handleRequestClose}
+                style={{
+                  width: '100%',
+                  marginTop: '14px',
+                  borderRadius: '12px',
+                  border: '1px solid #CBD5E1',
+                  background: '#F8FAFC',
+                  color: '#475569',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  padding: '9px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <FiX size={15} />
+                <span>{isKhmer ? 'បោះបង់ និងបិទផ្ទាំង (Cancel & Close)' : 'Cancel & Close'}</span>
+              </button>
             </>
           )}
 

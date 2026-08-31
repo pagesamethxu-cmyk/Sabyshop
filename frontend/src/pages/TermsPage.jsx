@@ -9,11 +9,11 @@ const TermsPage = () => {
   const [showPolicyModal, setShowPolicyModal] = useState(false);
 
   return (
-    <div className="animate-fade-in" style={{ padding: '40px 0 60px' }}>
+    <div className="animate-fade-in" style={{ padding: 'clamp(20px, 4vw, 40px) 0 60px' }}>
       <div className="container" style={{ maxWidth: '900px' }}>
         
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(20px, 4vw, 40px)' }}>
           <div style={{
             width: '60px', height: '60px', borderRadius: '50%', background: 'var(--secondary-light)',
             color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -21,16 +21,16 @@ const TermsPage = () => {
           }}>
             <FiFileText />
           </div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text)', marginBottom: '10px' }}>
+          <h1 style={{ fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '10px' }}>
             {t('termsPage.title')}
           </h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-light)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)' }}>
             {t('termsPage.lastUpdated')}
           </p>
         </div>
 
         {/* Content Card */}
-        <div className="card" style={{ padding: '40px', borderRadius: 'var(--radius-lg)', lineHeight: 1.8, color: 'var(--text)' }}>
+        <div className="card" style={{ padding: 'clamp(16px, 4vw, 40px)', borderRadius: 'var(--radius-lg)', lineHeight: 1.8, color: 'var(--text)' }}>
           
           <section style={{ marginBottom: '30px' }}>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '12px' }}>
@@ -64,13 +64,14 @@ const TermsPage = () => {
                 type="button"
                 onClick={() => setShowPolicyModal(true)}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '6px 12px', borderRadius: 10,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  padding: '8px 12px', borderRadius: 10,
                   border: '1px solid #4F46E5', background: 'rgba(79,70,229,0.08)',
-                  color: '#4F46E5', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer'
+                  color: '#4F46E5', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer',
+                  maxWidth: '100%', lineHeight: 1.35, wordBreak: 'break-word', textAlign: 'center'
                 }}
               >
-                <FiShield size={14} />
+                <FiShield size={14} style={{ flexShrink: 0 }} />
                 <span>{isKhmer ? 'បើកផ្ទាំងគោលការណ៍ប្តូរទំនិញពេញលេញ' : 'Open Complete Replace Policy Modal'}</span>
               </button>
             </div>

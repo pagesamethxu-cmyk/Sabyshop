@@ -68,14 +68,14 @@ const AccountRow = ({ label, value, isLong }) => (
   <div
     style={{
       display: 'grid',
-      gridTemplateColumns: '95px 1fr auto',
-      gap: 10,
+      gridTemplateColumns: 'clamp(75px, 22vw, 95px) 1fr auto',
+      gap: 8,
       alignItems: isLong ? 'flex-start' : 'center',
       padding: '11px 0',
       borderBottom: '1px solid var(--border-light, #f1f5f9)'
     }}
   >
-    <span style={{ fontSize: '0.82rem', color: 'var(--text-light, #64748b)', fontWeight: 600, paddingTop: isLong ? 2 : 0 }}>
+    <span style={{ fontSize: '0.82rem', color: 'var(--text-light, #64748b)', fontWeight: 600, paddingTop: isLong ? 2 : 0, wordBreak: 'break-word' }}>
       {label}
     </span>
     <span
@@ -83,9 +83,11 @@ const AccountRow = ({ label, value, isLong }) => (
         fontSize: '0.84rem',
         fontWeight: 700,
         color: 'var(--text, #0f172a)',
-        wordBreak: 'break-word',
+        wordBreak: 'break-all',
+        overflowWrap: 'anywhere',
         lineHeight: 1.5,
-        whiteSpace: isLong ? 'pre-wrap' : 'normal'
+        whiteSpace: isLong ? 'pre-wrap' : 'normal',
+        minWidth: 0
       }}
     >
       {value || '—'}
@@ -1232,7 +1234,7 @@ const OrderDetailPage = () => {
           right: 0,
           background: 'var(--card-bg, #ffffff)',
           borderTop: '1px solid var(--border, #e2e8f0)',
-          padding: '12px 16px 16px',
+          padding: '12px 16px calc(16px + env(safe-area-inset-bottom, 0px))',
           boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
           zIndex: 100
         }}>

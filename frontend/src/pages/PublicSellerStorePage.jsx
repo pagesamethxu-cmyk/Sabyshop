@@ -231,13 +231,13 @@ export default function PublicSellerStorePage() {
       {/*  SELLER TOP DASHBOARD (3-CARD HEADER LAYOUT)  */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: 16,
-        marginBottom: 28
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+        gap: 14,
+        marginBottom: 24
       }}>
         
         {/* CARD 1: Seller Info & Online Status */}
-        <div className="card" style={{ padding: '20px', borderRadius: '18px', background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+        <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px)', borderRadius: '18px', background: 'var(--card-bg)', border: '1px solid var(--border)', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
           <div style={{
             width: 68, height: 68, borderRadius: '50%', flexShrink: 0,
             background: profile?.storeLogoUrl ? `url(${profile.storeLogoUrl}) center/cover` : 'linear-gradient(135deg, #1E293B, #0F172A)',

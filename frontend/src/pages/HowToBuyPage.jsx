@@ -33,11 +33,11 @@ const HowToBuyPage = () => {
       <div className="container" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 16px' }}>
 
         {/* Page Title & Subtitle */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+        <div style={{ marginBottom: 'clamp(20px, 4vw, 32px)' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', fontWeight: 900, color: '#0F172A', marginBottom: '8px', letterSpacing: '-0.02em' }}>
             {t('howToBuy.title')}
           </h1>
-          <p style={{ color: '#64748B', fontSize: '1rem', fontWeight: 500, margin: 0 }}>
+          <p style={{ color: '#64748B', fontSize: 'clamp(0.88rem, 2.5vw, 1rem)', fontWeight: 500, margin: 0 }}>
             {t('howToBuy.subtitle')}
           </p>
         </div>
@@ -47,8 +47,8 @@ const HowToBuyPage = () => {
           className="how-feature-grid"
           style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
-            gap: '16px', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', 
+            gap: '14px', 
             marginBottom: '28px' 
           }}
         >
@@ -93,18 +93,18 @@ const HowToBuyPage = () => {
         </div>
 
         {/* 2. Step Cards List (1 to 5 with Pink+Purple Badges & Buttons) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
 
           {/* Step 1 */}
-          <div className="card" style={{ padding: '20px 24px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '16px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
+          <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px) clamp(14px, 4vw, 24px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '14px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.92rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
               1
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
                 {t('howToBuy.step1Title')}
               </h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 10px 0' }}>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 10px 0' }}>
                 {t('howToBuy.step1Desc')}
               </p>
               {isAuthenticated ? (
@@ -120,15 +120,15 @@ const HowToBuyPage = () => {
           </div>
 
           {/* Step 2 */}
-          <div className="card" style={{ padding: '20px 24px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '16px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
+          <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px) clamp(14px, 4vw, 24px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '14px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.92rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
               2
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
                 {t('howToBuy.step2Title')}
               </h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 12px 0' }}>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 12px 0' }}>
                 {t('howToBuy.step2Desc')}
               </p>
               <Link to="/store" className="btn" style={{ background: pinkPurpleGradient, color: '#FFFFFF', fontWeight: 800, borderRadius: '8px', padding: '8px 18px', fontSize: '0.88rem', border: 'none', boxShadow: '0 4px 14px rgba(255, 43, 109, 0.25)' }}>
@@ -138,45 +138,45 @@ const HowToBuyPage = () => {
           </div>
 
           {/* Step 3 */}
-          <div className="card" style={{ padding: '20px 24px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '16px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
+          <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px) clamp(14px, 4vw, 24px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '14px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.92rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
               3
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
                 {t('howToBuy.step3Title')}
               </h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
                 {t('howToBuy.step3Desc')}
               </p>
             </div>
           </div>
 
           {/* Step 4 */}
-          <div className="card" style={{ padding: '20px 24px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '16px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
+          <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px) clamp(14px, 4vw, 24px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '14px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.92rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
               4
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
                 {t('howToBuy.step4Title')}
               </h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, margin: 0 }}>
                 {t('howToBuy.step4Desc')}
               </p>
             </div>
           </div>
 
           {/* Step 5 */}
-          <div className="card" style={{ padding: '20px 24px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '16px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.95rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
+          <div className="card" style={{ padding: 'clamp(14px, 3.5vw, 20px) clamp(14px, 4vw, 24px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', display: 'flex', gap: '14px', alignItems: 'flex-start', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: pinkPurpleGradient, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.92rem', flexShrink: 0, boxShadow: '0 3px 10px rgba(255, 43, 109, 0.25)' }}>
               5
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '6px' }}>
                 {t('howToBuy.step5Title')}
               </h3>
-              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 12px 0' }}>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, margin: '0 0 12px 0' }}>
                 {t('howToBuy.step5Desc')}
               </p>
               <Link to="/orders" className="btn" style={{ background: pinkPurpleGradient, color: '#FFFFFF', fontWeight: 800, borderRadius: '8px', padding: '8px 18px', fontSize: '0.88rem', border: 'none', boxShadow: '0 4px 14px rgba(255, 43, 109, 0.25)' }}>
@@ -188,7 +188,7 @@ const HowToBuyPage = () => {
         </div>
 
         {/* 3. FAQ Accordion Section */}
-        <div className="card" style={{ padding: '24px 28px', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', marginBottom: '32px', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+        <div className="card" style={{ padding: 'clamp(16px, 4vw, 28px)', borderRadius: '16px', border: '1px solid #E2E8F0', background: '#FFFFFF', marginBottom: '28px', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginBottom: '18px' }}>
             {t('howToBuy.faqTitle')}
           </h2>
@@ -239,13 +239,13 @@ const HowToBuyPage = () => {
           style={{
             background: pinkPurpleGradient,
             borderRadius: '20px',
-            padding: '36px 24px',
+            padding: 'clamp(24px, 5vw, 36px) clamp(16px, 4vw, 24px)',
             textAlign: 'center',
             color: '#FFFFFF',
             boxShadow: '0 8px 30px rgba(255, 43, 109, 0.35)'
           }}
         >
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '20px', letterSpacing: '-0.01em' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.6rem)', fontWeight: 900, marginBottom: '20px', letterSpacing: '-0.01em' }}>
             {t('howToBuy.readyTitle')}
           </h2>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>

@@ -6,11 +6,11 @@ const PrivacyPage = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="animate-fade-in" style={{ padding: '40px 0 60px' }}>
+    <div className="animate-fade-in" style={{ padding: 'clamp(20px, 4vw, 40px) 0 60px' }}>
       <div className="container" style={{ maxWidth: '900px' }}>
         
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(20px, 4vw, 40px)' }}>
           <div style={{
             width: '60px', height: '60px', borderRadius: '50%', background: 'var(--primary-light)',
             color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -18,16 +18,16 @@ const PrivacyPage = () => {
           }}>
             <FiLock />
           </div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text)', marginBottom: '10px' }}>
+          <h1 style={{ fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '10px' }}>
             {t('privacyPage.title')}
           </h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-light)', fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)' }}>
             {t('privacyPage.lastUpdated')}
           </p>
         </div>
 
         {/* Content Card */}
-        <div className="card" style={{ padding: '40px', borderRadius: 'var(--radius-lg)', lineHeight: 1.8, color: 'var(--text)' }}>
+        <div className="card" style={{ padding: 'clamp(16px, 4vw, 40px)', borderRadius: 'var(--radius-lg)', lineHeight: 1.8, color: 'var(--text)' }}>
           
           <section style={{ marginBottom: '30px' }}>
             <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px' }}>

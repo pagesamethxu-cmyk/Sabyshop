@@ -58,14 +58,12 @@ const SAKUSupportWidget = () => {
     return () => window.removeEventListener('seller-tab-change', handleTabChange);
   }, []);
 
-  // Show floating support headset icon ONLY on:
-  // 1. Seller Portal — OVERVIEW (tab === 'overview')
-  // 2. Seller Portal — SETTINGS (tab === 'settings')
+  // Show floating support headset icon ONLY on Home (/) and Store (/store) pages
   const pathname = location.pathname.toLowerCase();
-  const isSellerPortal = pathname === '/seller' || pathname.startsWith('/seller');
-  const isAllowedSellerTab = sellerTab === 'overview' || sellerTab === 'settings';
+  const isHomePage = pathname === '/' || pathname === '/home';
+  const isStorePage = pathname === '/store' || pathname.startsWith('/store');
 
-  const isAllowedPage = isSellerPortal && isAllowedSellerTab;
+  const isAllowedPage = isHomePage || isStorePage;
 
   useEffect(() => {
     try {
@@ -280,7 +278,7 @@ const SAKUSupportWidget = () => {
     }, 80);
   };
 
-  if (!isAllowedPage) {
+  if (!isAllowedPage && !isOpen) {
     return null;
   }
 
@@ -296,13 +294,13 @@ const SAKUSupportWidget = () => {
             bottom: '24px',
             right: '24px',
             zIndex: 9999,
-            width: '56px',
-            height: '56px',
+            width: '48px',
+            height: '48px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
             color: '#fff',
             border: 'none',
-            boxShadow: '0 8px 25px rgba(37, 99, 235, 0.45)',
+            boxShadow: '0 6px 20px rgba(37, 99, 235, 0.4)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -313,14 +311,14 @@ const SAKUSupportWidget = () => {
           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           aria-label="Open SAKU AI Support"
         >
-          <FiHeadphones size={26} />
+          <FiHeadphones size={22} />
           {/* Online green dot */}
           <span style={{
             position: 'absolute',
             top: 2,
             right: 2,
-            width: 12,
-            height: 12,
+            width: 10,
+            height: 10,
             borderRadius: '50%',
             background: '#22c55e',
             border: '2px solid #ffffff'
@@ -328,7 +326,7 @@ const SAKUSupportWidget = () => {
         </button>
       )}
 
-      {/* Floating Chat Modal (100% copy of video style) */}
+      {/* Floating Chat Modal */}
       {isOpen && (
         <div
           className="saku-chat-window animate-slide-up"
@@ -337,12 +335,12 @@ const SAKUSupportWidget = () => {
             bottom: '24px',
             right: '24px',
             zIndex: 10000,
-            width: 'min(400px, calc(100vw - 32px))',
-            height: 'min(620px, calc(100vh - 48px))',
-            borderRadius: '20px',
+            width: 'min(360px, calc(100vw - 20px))',
+            height: 'min(520px, calc(100vh - 90px))',
+            borderRadius: '18px',
             background: '#ffffff',
             border: '1px solid #e2e8f0',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.22)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.2)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -351,7 +349,7 @@ const SAKUSupportWidget = () => {
         >
           {/* Header (SAKU, AI Support, -, x) */}
           <div style={{
-            padding: '14px 18px',
+            padding: '10px 14px',
             background: '#ffffff',
             borderBottom: '1px solid #f1f5f9',
             display: 'flex',
@@ -359,10 +357,10 @@ const SAKUSupportWidget = () => {
             justifyContent: 'space-between',
             flexShrink: 0
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
-                width: 40,
-                height: 40,
+                width: 34,
+                height: 34,
                 borderRadius: '50%',
                 background: '#fef08a',
                 overflow: 'hidden',
@@ -375,12 +373,12 @@ const SAKUSupportWidget = () => {
                 <img src={SAKU_AVATAR} alt="SAKU" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '0.98rem', color: '#0f172a', lineHeight: 1.2 }}>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a', lineHeight: 1.2 }}>
                   {isSellerMode ? 'SAKU (Seller Support)' : 'SAKU'}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e' }} />
-                  {isSellerMode ? (isKhmer ? 'ផ្នែកជំនួយអ្នកលក់ (VIP Support)' : 'Seller VIP Support') : 'AI Support'}
+                <div style={{ fontSize: '0.70rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                  {isSellerMode ? (isKhmer ? 'ផ្នែកជំនួយអ្នកលក់ (VIP)' : 'Seller VIP Support') : 'AI Support'}
                 </div>
               </div>
             </div>
@@ -393,8 +391,8 @@ const SAKUSupportWidget = () => {
                   background: '#f8fafc',
                   border: 'none',
                   borderRadius: '50%',
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -403,25 +401,25 @@ const SAKUSupportWidget = () => {
                 }}
                 aria-label="Minimize"
               >
-                <FiMinus size={16} />
+                <FiMinus size={14} />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 style={{
-                  background: '#f8fafc',
-                  border: 'none',
+                  background: '#FEE2E2',
+                  border: '1px solid #FCA5A5',
                   borderRadius: '50%',
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#64748b',
+                  color: '#DC2626',
                   cursor: 'pointer'
                 }}
                 aria-label="Close"
               >
-                <FiX size={16} />
+                <FiX size={15} />
               </button>
             </div>
           </div>
@@ -430,11 +428,11 @@ const SAKUSupportWidget = () => {
           <div style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '16px',
+            padding: '12px 14px',
             background: '#f8fafc',
             display: 'flex',
             flexDirection: 'column',
-            gap: 14
+            gap: 10
           }}>
             {messages.map((m) => {
               const isBot = m.sender === 'SAKU';
@@ -446,13 +444,13 @@ const SAKUSupportWidget = () => {
                     display: 'flex',
                     flexDirection: isBot ? 'row' : 'row-reverse',
                     alignItems: 'flex-start',
-                    gap: 10
+                    gap: 8
                   }}
                 >
                   {isBot && (
                     <div style={{
-                      width: 32,
-                      height: 32,
+                      width: 28,
+                      height: 28,
                       borderRadius: '50%',
                       background: '#fef08a',
                       overflow: 'hidden',
@@ -468,17 +466,17 @@ const SAKUSupportWidget = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: isBot ? 'flex-start' : 'flex-end',
-                    maxWidth: '82%'
+                    maxWidth: '85%'
                   }}>
                     <div style={{
-                      padding: '12px 16px',
-                      borderRadius: isBot ? '18px 18px 18px 4px' : '18px 18px 4px 18px',
+                      padding: '9px 13px',
+                      borderRadius: isBot ? '14px 14px 14px 4px' : '14px 14px 4px 14px',
                       background: isBot ? '#ffffff' : '#2563eb',
                       color: isBot ? '#1e293b' : '#ffffff',
                       border: isBot ? '1px solid #e2e8f0' : 'none',
-                      boxShadow: isBot ? '0 2px 8px rgba(0,0,0,0.04)' : '0 3px 12px rgba(37,99,235,0.3)',
-                      fontSize: '0.88rem',
-                      lineHeight: 1.55,
+                      boxShadow: isBot ? '0 1px 4px rgba(0,0,0,0.03)' : '0 2px 8px rgba(37,99,235,0.25)',
+                      fontSize: '0.82rem',
+                      lineHeight: 1.45,
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word'
                     }}>
@@ -486,27 +484,27 @@ const SAKUSupportWidget = () => {
                     </div>
 
                     <div style={{
-                      fontSize: '0.68rem',
+                      fontSize: '0.64rem',
                       color: '#94a3b8',
-                      marginTop: 4,
+                      marginTop: 3,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 4
                     }}>
                       {m.time}
-                      {!isBot && <FiCheck size={11} color="#2563eb" />}
+                      {!isBot && <FiCheck size={10} color="#2563eb" />}
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            {/* 3-dots typing indicator (matching video) */}
+            {/* 3-dots typing indicator */}
             {isTyping && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   borderRadius: '50%',
                   background: '#fef08a',
                   overflow: 'hidden',
@@ -516,17 +514,17 @@ const SAKUSupportWidget = () => {
                   <img src={SAKU_AVATAR} alt="SAKU" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{
-                  padding: '10px 18px',
-                  borderRadius: '18px 18px 18px 4px',
+                  padding: '8px 14px',
+                  borderRadius: '14px 14px 14px 4px',
                   background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 5
+                  gap: 4
                 }}>
-                  <span className="typing-dot" style={{ background: '#2563eb', width: 6, height: 6, borderRadius: '50%' }} />
-                  <span className="typing-dot" style={{ background: '#3b82f6', width: 6, height: 6, borderRadius: '50%' }} />
-                  <span className="typing-dot" style={{ background: '#60a5fa', width: 6, height: 6, borderRadius: '50%' }} />
+                  <span className="typing-dot" style={{ background: '#2563eb', width: 5, height: 5, borderRadius: '50%' }} />
+                  <span className="typing-dot" style={{ background: '#3b82f6', width: 5, height: 5, borderRadius: '50%' }} />
+                  <span className="typing-dot" style={{ background: '#60a5fa', width: 5, height: 5, borderRadius: '50%' }} />
                 </div>
               </div>
             )}
@@ -535,7 +533,7 @@ const SAKUSupportWidget = () => {
 
           {/* Input Bar & Saby AI footer */}
           <div style={{
-            padding: '10px 14px 8px',
+            padding: '8px 12px 6px',
             background: '#ffffff',
             borderTop: '1px solid #f1f5f9',
             flexShrink: 0
@@ -544,9 +542,9 @@ const SAKUSupportWidget = () => {
               display: 'flex',
               alignItems: 'center',
               background: '#f8fafc',
-              borderRadius: '24px',
+              borderRadius: '20px',
               border: '1px solid #e2e8f0',
-              padding: '4px 8px 4px 16px'
+              padding: '3px 6px 3px 12px'
             }}>
               <input
                 ref={inputRef}
@@ -561,7 +559,7 @@ const SAKUSupportWidget = () => {
                   border: 'none',
                   background: 'transparent',
                   outline: 'none',
-                  fontSize: '0.88rem',
+                  fontSize: '0.82rem',
                   color: '#0f172a',
                   opacity: (isSending || isTyping) ? 0.6 : 1
                 }}
@@ -572,14 +570,14 @@ const SAKUSupportWidget = () => {
                   background: 'transparent',
                   border: 'none',
                   color: '#94a3b8',
-                  padding: 6,
+                  padding: 4,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center'
                 }}
                 aria-label="Attach file"
               >
-                <FiPaperclip size={18} />
+                <FiPaperclip size={16} />
               </button>
               <button
                 onClick={() => handleSend()}
@@ -588,8 +586,8 @@ const SAKUSupportWidget = () => {
                   background: (inputText.trim() && !isSending && !isTyping) ? '#2563eb' : '#cbd5e1',
                   border: 'none',
                   borderRadius: '50%',
-                  width: 34,
-                  height: 34,
+                  width: 30,
+                  height: 30,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -600,15 +598,15 @@ const SAKUSupportWidget = () => {
                 }}
                 aria-label="Send message"
               >
-                <FiSend size={15} />
+                <FiSend size={13} />
               </button>
             </div>
 
-            {/* Powered by Saby AI (video footer) */}
+            {/* Powered by Saby AI */}
             <div style={{
               textAlign: 'center',
-              marginTop: 6,
-              fontSize: '0.68rem',
+              marginTop: 4,
+              fontSize: '0.64rem',
               color: '#94a3b8',
               fontWeight: 600
             }}>
@@ -627,14 +625,14 @@ const SAKUSupportWidget = () => {
         @media (max-width: 768px) {
           .saku-floating-fab {
             bottom: 84px !important;
-            right: 16px !important;
-            width: 52px !important;
-            height: 52px !important;
+            right: 14px !important;
+            width: 44px !important;
+            height: 44px !important;
           }
           .saku-chat-window {
             bottom: 74px !important;
-            right: 12px !important;
-            max-height: calc(100vh - 90px) !important;
+            right: 10px !important;
+            max-height: calc(100vh - 84px) !important;
           }
         }
       `}</style>
