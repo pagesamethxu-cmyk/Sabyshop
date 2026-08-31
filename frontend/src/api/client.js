@@ -154,9 +154,7 @@ export const admin = {
   createCategory: (data) => client.post('/admin/categories', data),
   updateCategory: (id, data) => client.put(`/admin/categories/${id}`, data),
   deleteCategory: (id) => client.delete(`/admin/categories/${id}`),
-  uploadImage: (formData) => client.post('/admin/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  uploadImage: (formData) => client.post('/admin/upload', formData),
   // Sellers
   getAllSellers: () => client.get('/admin/sellers'),
   getSellerById: (id) => client.get(`/admin/sellers/${id}`),
@@ -218,9 +216,7 @@ export const seller = {
   renewSubscription: (paymentId, planId) => client.post('/seller/renew-subscription', { paymentId, planId }),
   checkStoreName: (name) => client.get('/seller/check-store-name', { params: { name } }),
   // File Upload
-  uploadImage: (formData) => client.post('/seller/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  uploadImage: (formData) => client.post('/seller/upload', formData),
   // Profile
   getProfile: () => client.get('/seller/profile'),
   updateProfile: (data) => client.put('/seller/profile', data),

@@ -20,10 +20,10 @@ import ProductCard from '../components/ProductCard';
 import ContactSellerModal from '../components/ContactSellerModal';
 import PolicyModal from '../components/PolicyModal';
 import PaymentModal from '../components/PaymentModal';
-import ConfettiEffect from '../components/ConfettiEffect';
 import { generateKHQR, generateMD5 } from '../utils/khqr';
 import { getProductTypeInfo } from '../utils/productOptions';
 import { getProductImageUrl } from '../utils/productImages';
+import { normalizeImageUrl } from '../utils/imageUrl';
 
 const ACCOUNT_ID = import.meta.env.VITE_ABA_ACCOUNT_ID || import.meta.env.VITE_BAKONG_ACCOUNT_ID || 'ec477571@abaa';
 const BANK_PHONE = import.meta.env.VITE_ABA_PHONE || import.meta.env.VITE_BAKONG_PHONE || '0972089305';
@@ -338,7 +338,9 @@ const ProductPage = () => {
     setShowContactSellerModal(true);
   };
 
-  const resolvedImg = getProductImageUrl(product.name, product.imageUrl);
+  const [imgError, setImgError] = useState(false);
+  const brandFallback = getProductImageUrl(product?.name, '');
+  const resolvedImg = !imgError && product?.imageUrl ? normalizeImageUrl(product.imageUrl) : brandFallback;
   const typeInfo = getProductTypeInfo(product.productType || 'ACCOUNT');
   const subtotal = subtotalNum.toFixed(2);
 
@@ -429,7 +431,7 @@ const ProductPage = () => {
               title="Click to view image"
             >
               {resolvedImg ? (
-                <img src={resolvedImg} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }} />
+                <img src={resolvedImg} alt={product.name} onError={() => setImgError(true)} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }} />
               ) : (
                 <span style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--primary)' }}>
                   {(product.name || '?')[0]}

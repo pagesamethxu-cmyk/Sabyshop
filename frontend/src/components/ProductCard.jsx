@@ -4,8 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { FiCheckCircle, FiStar } from 'react-icons/fi';
 import { MdStorefront, MdVerified } from 'react-icons/md';
-import toast from 'react-hot-toast';
 import { getProductImageUrl } from '../utils/productImages';
+import { normalizeImageUrl } from '../utils/imageUrl';
 import { getProductTypeInfo, getProductLabelInfo, resolveProductLabelInfo } from '../utils/productOptions';
 
 const ProductCard = ({ product: initialProduct, variants = [] }) => {
@@ -43,7 +43,8 @@ const ProductCard = ({ product: initialProduct, variants = [] }) => {
   };
 
   const [imgError, setImgError] = React.useState(false);
-  const resolvedImg = !imgError ? getProductImageUrl(product.name, product.imageUrl) : null;
+  const brandFallback = getProductImageUrl(product.name, '');
+  const resolvedImg = !imgError && product.imageUrl ? normalizeImageUrl(product.imageUrl) : brandFallback;
 
   return (
     <div className="product-card-container card animate-fade-in">

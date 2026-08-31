@@ -91,28 +91,41 @@ const ProductsManage = () => {
     }
   };
 
+  const isImageFile = (file) => {
+    if (!file) return false;
+    if (file.type && file.type.startsWith('image/')) return true;
+    const name = (file.name || '').toLowerCase();
+    return /\.(jpg|jpeg|jfif|pjpeg|pjp|png|webp|gif|svg|bmp|ico|tiff|avif)$/i.test(name);
+  };
+
   const handleImageUpload = async (file) => {
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
+    if (!isImageFile(file)) {
       toast.error(isKhmer ? 'សូមជ្រើសរើស File រូបភាពប៉ុណ្ណោះ' : 'Please select an image file');
       return;
     }
-    const localPreview = URL.createObjectURL(file);
-    setFormData(prev => ({ ...prev, imageUrl: localPreview }));
+    try {
+      const localPreview = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, imageUrl: localPreview }));
+    } catch (e) {}
+
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const res = await adminApi.uploadImage(fd);
       const url = res.data?.data || res.data?.url || res.data || res;
-      const cleanUrl = normalizeImageUrl(typeof url === 'string' ? url : '');
-      setFormData(prev => ({ ...prev, imageUrl: cleanUrl || localPreview }));
+      if (url && typeof url === 'string') {
+        const cleanUrl = normalizeImageUrl(url);
+        setFormData(prev => ({ ...prev, imageUrl: cleanUrl }));
+      }
       toast.success(isKhmer ? 'បាន Upload រូបភាពជោគជ័យ!' : 'Image uploaded successfully!');
     } catch (err) {
       console.error('Upload error:', err);
-      toast.error(isKhmer ? 'មិនអាច Upload រូបភាពបានទេ' : 'Image upload failed');
+      toast.error(isKhmer ? 'មិនអាច Upload រូបភាពបានទេ' : (err?.response?.data?.message || 'Image upload failed'));
     } finally {
       setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
@@ -376,7 +389,7 @@ const ProductsManage = () => {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.jfif,.pjpeg,.pjp,.png,.jpg,.jpeg,.webp,.gif,.svg"
                   style={{ display: 'none' }}
                   onChange={e => {
                     if (e.target.files?.[0]) {
