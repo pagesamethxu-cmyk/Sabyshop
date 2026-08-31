@@ -61,10 +61,24 @@ public class UploadController {
             Path file = resolveUploadFile(filename);
             if (file != null && Files.exists(file) && Files.isRegularFile(file)) {
                 Resource resource = new UrlResource(file.toUri());
-                if (resource.exists() && resource.isReadable()) {
                     String contentType = Files.probeContentType(file);
-                    if (contentType == null) {
-                        contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                    if (contentType == null || contentType.equals(MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
+                        String lowerName = filename.toLowerCase();
+                        if (lowerName.endsWith(".jfif") || lowerName.endsWith(".pjpeg") || lowerName.endsWith(".pjp") || lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) {
+                            contentType = "image/jpeg";
+                        } else if (lowerName.endsWith(".png")) {
+                            contentType = "image/png";
+                        } else if (lowerName.endsWith(".webp")) {
+                            contentType = "image/webp";
+                        } else if (lowerName.endsWith(".gif")) {
+                            contentType = "image/gif";
+                        } else if (lowerName.endsWith(".svg")) {
+                            contentType = "image/svg+xml";
+                        } else if (lowerName.endsWith(".ico")) {
+                            contentType = "image/x-icon";
+                        } else {
+                            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                        }
                     }
                     return ResponseEntity.ok()
                             .header(HttpHeaders.CONTENT_TYPE, contentType)

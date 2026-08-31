@@ -44,6 +44,7 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [buyerInviteEmail, setBuyerInviteEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [imgError, setImgError] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
@@ -110,6 +111,7 @@ const ProductPage = () => {
     };
 
     fetchProductData();
+    setImgError(false);
     window.scrollTo(0, 0);
   }, [id]);
 
@@ -338,7 +340,6 @@ const ProductPage = () => {
     setShowContactSellerModal(true);
   };
 
-  const [imgError, setImgError] = useState(false);
   const brandFallback = getProductImageUrl(product?.name, '');
   const resolvedImg = !imgError && product?.imageUrl ? normalizeImageUrl(product.imageUrl) : brandFallback;
   const typeInfo = getProductTypeInfo(product.productType || 'ACCOUNT');
