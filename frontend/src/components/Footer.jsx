@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiHeart, FiGithub, FiTwitter, FiInstagram, FiMail, FiShield, FiLock, FiX, FiChevronRight, FiMessageSquare } from 'react-icons/fi';
-import { FaTelegram } from 'react-icons/fa';
+import { FaTelegram, FaFacebook } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 
 const Footer = () => {
@@ -40,22 +40,29 @@ const Footer = () => {
             </p>
 
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
+              <a
+                href="https://web.facebook.com/profile.php?id=61589969357567"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon-btn"
+                title="Facebook Page"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(24, 119, 242, 0.1)', border: '1px solid rgba(24, 119, 242, 0.25)' }}
+              >
+                <FaFacebook size={18} color="#1877F2" />
+              </a>
               <button
                 type="button"
                 onClick={() => setIsTelegramModalOpen(true)}
                 className="social-icon-btn"
                 title="Telegram Options"
-                style={{ border: 'none', cursor: 'pointer', background: 'var(--bg-secondary)' }}
+                style={{ border: 'none', cursor: 'pointer', background: 'rgba(0, 136, 204, 0.1)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <FaTelegram size={18} color="#0088cc" />
               </button>
-              <a href={`mailto:${supportEmail}`} className="social-icon-btn" title={`Email Support: ${supportEmail}`}>
+              <a href={`mailto:${supportEmail}`} className="social-icon-btn" title={`Email Support: ${supportEmail}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                 <FiMail size={18} color="var(--primary)" />
               </a>
-              <a href="#" className="social-icon-btn" title="Twitter / X">
-                <FiTwitter size={18} color="var(--text-light)" />
-              </a>
-              <a href="#" className="social-icon-btn" title="Instagram">
+              <a href="https://web.facebook.com/profile.php?id=61589969357567" target="_blank" rel="noopener noreferrer" className="social-icon-btn" title="Instagram" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                 <FiInstagram size={18} color="var(--text-light)" />
               </a>
             </div>
