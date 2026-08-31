@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FiEdit2, FiTrash2, FiPlus, FiDatabase,
-  FiX, FiUpload, FiImage, FiPackage, FiSearch
+  FiX, FiUpload, FiUploadCloud, FiImage, FiPackage, FiSearch
 } from 'react-icons/fi';
 import { admin as adminApi, products as productsApi, categories as categoriesApi } from '../../api/client';
 import { DIGITAL_PRODUCT_TYPES, PRODUCT_DURATIONS, PRODUCT_LABELS, getCategoryTypes, getDefaultTypeForCategory, getProductTypeInfo } from '../../utils/productOptions';
@@ -68,7 +68,7 @@ const ProductsManage = () => {
 
   const handleOpenEdit = (p) => {
     setEditingProduct(p);
-    setFormData({ name: p.name, description: p.description || '', price: p.price, imageUrl: p.imageUrl || '', categoryId: p.categoryId || '', productType: p.productType || 'ACCOUNT', duration: p.duration || '1 Month', productLabel: p.productLabel || '', active: p.active });
+    setFormData({ name: p.name, description: p.description || '', price: p.price, imageUrl: normalizeImageUrl(p.imageUrl || ''), categoryId: p.categoryId || '', productType: p.productType || 'ACCOUNT', duration: p.duration || '1 Month', productLabel: p.productLabel || '', active: p.active });
     setShowModal(true);
   };
 
@@ -365,45 +365,151 @@ const ProductsManage = () => {
                 );
               })()}
 
-              {/* Image */}
+              {/* Product Image Import (No raw URL displayed) */}
               <div className="admin-form-group">
-                <label className="admin-form-label"><FiImage style={{ marginRight: 6 }} />{isKhmer ? 'រូបភាពផលិតផល (Product Image)' : 'Product Image'}</label>
-                <div className="admin-image-upload" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
-                    onChange={e => handleImageUpload(e.target.files[0])} />
-                  <button type="button" className="admin-btn admin-btn-primary admin-btn-sm"
-                    onClick={() => fileRef.current?.click()} disabled={uploading} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontWeight: 600 }}>
-                    <FiUpload size={14} /> {uploading ? (isKhmer ? 'កំពុង Upload...' : 'Uploading...') : (isKhmer ? 'Upload រូបភាពពីកុំព្យូទ័រ' : 'Upload Image from Device')}
-                  </button>
-                  <input className="admin-input" type="text" placeholder={isKhmer ? 'ឬដាក់ Link រូបភាព' : 'or paste image URL'}
-                    value={formData.imageUrl}
-                    onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
-                    style={{ flex: 1, minWidth: 200 }} />
-                </div>
+                <label className="admin-form-label" style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}>
+                  <FiImage /> {isKhmer ? 'រូបភាពផលិតផល (Product Image)' : 'Product Image'}
+                </label>
 
-                {/* Stock image picker */}
-                <div style={{ marginTop: 10 }}>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: 6 }}>{isKhmer ? 'ជ្រើសរើសរូបភាពគំរូលឿន (Quick-pick):' : 'Quick-pick:'}</label>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    if (e.target.files?.[0]) {
+                      handleImageUpload(e.target.files[0]);
+                    }
+                  }}
+                />
+
+                {formData.imageUrl ? (
+                  /* When an image is loaded: Show clean visual preview + Change / Remove buttons */
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    padding: '12px 16px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: 12,
+                    marginBottom: 10
+                  }}>
+                    <div style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      border: '1px solid rgba(255, 255, 255, 0.15)'
+                    }}>
+                      <img
+                        src={normalizeImageUrl(formData.imageUrl)}
+                        alt="Product Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                      <div style={{ fontSize: '0.84rem', color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
+                        {isKhmer ? 'រូបភាពរួចរាល់' : 'Image Ready'}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-outline admin-btn-sm"
+                          onClick={() => fileRef.current?.click()}
+                          disabled={uploading}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.78rem' }}
+                        >
+                          <FiUpload size={13} /> {uploading ? (isKhmer ? 'កំពុង Upload...' : 'Uploading...') : (isKhmer ? 'ប្ដូររូបភាព' : 'Change Image')}
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-danger admin-btn-sm"
+                          onClick={() => setFormData(f => ({ ...f, imageUrl: '' }))}
+                          disabled={uploading}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', background: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)' }}
+                        >
+                          <FiTrash2 size={13} /> {isKhmer ? 'លុបរូបភាព' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* When no image: Show modern Drag & Drop / Click to Import Box */
+                  <div
+                    onClick={() => fileRef.current?.click()}
+                    style={{
+                      border: '2px dashed rgba(99, 102, 241, 0.4)',
+                      borderRadius: 12,
+                      padding: '20px 16px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      background: 'rgba(99, 102, 241, 0.04)',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      marginBottom: 10
+                    }}
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={e => {
+                      e.preventDefault();
+                      if (e.dataTransfer.files?.[0]) {
+                        handleImageUpload(e.dataTransfer.files[0]);
+                      }
+                    }}
+                  >
+                    <div style={{
+                      width: 42,
+                      height: 42,
+                      borderRadius: '50%',
+                      background: 'rgba(99, 102, 241, 0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#818cf8'
+                    }}>
+                      <FiUploadCloud size={22} />
+                    </div>
+                    <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.88rem' }}>
+                      {uploading ? (isKhmer ? 'កំពុង Upload រូបភាព...' : 'Uploading image...') : (isKhmer ? 'ចុចទីនេះដើម្បី Upload រូបភាពពីកុំព្យូទ័រ' : 'Click to import image from device')}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
+                      {isKhmer ? 'PNG, JPG, WEBP, GIF (រហូតដល់ 10MB)' : 'PNG, JPG, WEBP, GIF (up to 10MB)'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Stock image quick-picker */}
+                <div>
+                  <label style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: 6 }}>
+                    {isKhmer ? 'ឬជ្រើសរើស Logo គំរូ (Quick-pick):' : 'Or quick-pick brand logo:'}
+                  </label>
                   <div className="admin-stock-images">
                     {stockImages.map(img => (
-                      <button key={img.name} type="button"
+                      <button
+                        key={img.name}
+                        type="button"
                         className={`admin-stock-img-btn ${formData.imageUrl === img.url ? 'selected' : ''}`}
                         style={{ border: `1px solid ${formData.imageUrl === img.url ? 'var(--admin-accent)' : 'var(--admin-card-border)'}` }}
-                        onClick={() => setFormData({ ...formData, imageUrl: img.url })}>
+                        onClick={() => setFormData({ ...formData, imageUrl: img.url })}
+                      >
                         <img src={img.url} alt={img.name} onError={e => { e.target.style.display = 'none'; }} />
                         {img.name}
                       </button>
                     ))}
                   </div>
                 </div>
-
-                {formData.imageUrl && (
-                  <div className="admin-image-preview" style={{ marginTop: 12, padding: 8, background: 'rgba(255, 255, 255, 0.05)', borderRadius: 8, display: 'inline-block' }}>
-                    <img src={normalizeImageUrl(formData.imageUrl)} alt="Preview"
-                      style={{ maxHeight: 100, borderRadius: 6, objectFit: 'cover' }}
-                      onError={e => { e.target.style.display = 'none'; }} />
-                  </div>
-                )}
               </div>
 
               <div className="admin-form-group">
