@@ -83,30 +83,7 @@ public class AdminController {
         return defaultDir;
     }
 
-    private Path resolveUploadFile(String filename) {
-        if (filename == null || filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
-            return null;
-        }
-        Path[] candidateDirs = new Path[] {
-            Paths.get(uploadDir),
-            Paths.get("uploads"),
-            Paths.get("backend", "uploads"),
-            Paths.get("backend", uploadDir),
-            Paths.get("..", "uploads"),
-            Paths.get("..", "backend", "uploads"),
-            Paths.get(System.getProperty("user.dir"), "uploads"),
-            Paths.get(System.getProperty("user.dir"), "backend", "uploads")
-        };
-        for (Path dir : candidateDirs) {
-            try {
-                Path candidate = dir.resolve(filename).normalize();
-                if (Files.exists(candidate) && Files.isRegularFile(candidate)) {
-                    return candidate;
-                }
-            } catch (Exception ignored) {}
-        }
-        return Paths.get(uploadDir).resolve(filename);
-    }
+
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse<String>> uploadImage(@RequestParam("file") MultipartFile file) {
@@ -140,29 +117,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/uploads/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        try {
-            Path file = resolveUploadFile(filename);
-            if (file != null && Files.exists(file) && Files.isRegularFile(file)) {
-                Resource resource = new UrlResource(file.toUri());
-                if (resource.exists() && resource.isReadable()) {
-                    String contentType = Files.probeContentType(file);
-                    if (contentType == null) {
-                        contentType = "application/octet-stream";
-                    }
-                    return ResponseEntity.ok()
-                            .header("Content-Type", contentType)
-                            .header("Cache-Control", "public, max-age=86400")
-                            .header("Content-Disposition", "inline; filename=\"" + resource.getFilename() + "\"")
-                            .body(resource);
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Failed to serve upload file [{}]: {}", filename, e.getMessage());
-        }
-        return ResponseEntity.notFound().build();
-    }
+
 
     // ─── Products ─────────────────────────────────────────────────────────────────
 
