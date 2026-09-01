@@ -2,11 +2,14 @@ package com.sabyshop.repository;
 
 import com.sabyshop.model.Order;
 import com.sabyshop.model.OrderStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(Long userId);
@@ -99,4 +102,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findDeliveredOrdersForEscrowRelease(
             @Param("status") OrderStatus status,
             @Param("cutoff") java.time.LocalDateTime cutoff);
+
+    /** Pessimistic-write lock on order fetch — prevents concurrent payment confirmation from double-processing the same order. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Order o WHERE o.id = :id")
+    Optional<Order> findByIdWithLock(@Param("id") Long id);
 }

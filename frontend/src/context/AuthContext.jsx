@@ -15,7 +15,14 @@ export const useAuth = () => {
       isAdmin: false,
       login: async () => {},
       logout: () => {},
-      updateUser: () => {}
+      updateUser: () => {},
+      loginWithGoogle: async () => {},
+      sendVerificationCode: async () => {},
+      verifyAndRegister: async () => {},
+      forgotPassword: async () => {},
+      resetPassword: async () => {},
+      register: async () => {},
+      verifyEmail: async () => {},
     };
   }
   return context;

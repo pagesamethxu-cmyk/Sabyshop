@@ -110,7 +110,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout(@RequestParam(required = false) String email) {
+    public ResponseEntity<ApiResponse<String>> logout(Authentication authentication) {
+        String email = authentication != null ? authentication.getName() : null;
         authService.logout(email);
         return ResponseEntity.ok(new ApiResponse<>(true, "Logged out successfully", "Logout notification processed"));
     }

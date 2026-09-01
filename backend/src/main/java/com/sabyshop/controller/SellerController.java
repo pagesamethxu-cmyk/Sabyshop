@@ -63,10 +63,18 @@ public class SellerController {
             String ext = "";
             String orig = file.getOriginalFilename();
             if (orig != null && orig.contains(".")) {
-                ext = orig.substring(orig.lastIndexOf('.'));
+                ext = orig.substring(orig.lastIndexOf('.')).toLowerCase();
+            }
+            java.util.List<String> allowedExtensions = java.util.List.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
+            if (!allowedExtensions.contains(ext)) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Only image files are allowed (.jpg, .jpeg, .png, .gif, .webp)", null));
+            }
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid file type. Only image files are allowed.", null));
             }
             String filename = java.util.UUID.randomUUID().toString() + ext;
-            java.nio.file.Path filePath = uploadPath.resolve(filename);
+            java.nio.file.Path filePath = uploadPath.resolve(java.nio.file.Paths.get(filename).getFileName().toString());
             java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
             // Also keep root uploads in sync if distinct
@@ -194,7 +202,12 @@ public class SellerController {
             @RequestBody Map<String, String> body,
             Authentication auth) {
         String statusStr = body.get("status");
-        com.sabyshop.model.OrderStatus status = com.sabyshop.model.OrderStatus.valueOf(statusStr);
+        com.sabyshop.model.OrderStatus status;
+        try {
+            status = com.sabyshop.model.OrderStatus.valueOf(statusStr);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Invalid order status: " + statusStr, null));
+        }
         return ResponseEntity.ok(new ApiResponse<>(true, "Order status updated",
                 sellerService.updateSellerOrderStatus(getCurrentUserId(auth), id, status)));
     }

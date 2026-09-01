@@ -42,19 +42,19 @@ public class RateLimiterService {
 
     // ── Limits ───────────────────────────────────────────────────────────────
 
-    private static final int  GLOBAL_IP_MAX    = 60;
+    private static final int  GLOBAL_IP_MAX    = 600;
     private static final long GLOBAL_IP_WINDOW = 60L;
 
-    private static final int  AUTH_MAX    = 5;
+    private static final int  AUTH_MAX    = 20;
     private static final long AUTH_WINDOW = 60L;
 
-    private static final int  ORDER_MAX    = 20;
+    private static final int  ORDER_MAX    = 60;
     private static final long ORDER_WINDOW = 60L;
 
-    private static final int  UPLOAD_MAX    = 15;
+    private static final int  UPLOAD_MAX    = 40;
     private static final long UPLOAD_WINDOW = 60L;
 
-    private static final int  USER_MAX    = 80;
+    private static final int  USER_MAX    = 400;
     private static final long USER_WINDOW = 60L;
 
     /**

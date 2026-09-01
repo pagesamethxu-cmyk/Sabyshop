@@ -131,9 +131,11 @@ public class OrderService {
                     discountAmount = Math.round(discountAmount * 100.0) / 100.0;
                     appliedCouponCode = coupon.getCode();
 
-                    // Increment usage
-                    coupon.setUsedCount((coupon.getUsedCount() != null ? coupon.getUsedCount() : 0) + 1);
-                    couponRepository.save(coupon);
+                    // Increment usage atomically to prevent concurrent over-use race condition
+                    int updated = couponRepository.atomicIncrementUsage(coupon.getId());
+                    if (updated == 0) {
+                        throw new BadRequestException("Coupon has reached its usage limit or is no longer valid.");
+                    }
                     log.info("Coupon [{}] applied to Order by User [{}]. Discount: ${}, Eligible Subtotal: ${}", code, userId, discountAmount, eligibleSubtotal);
                 }
             }
@@ -224,7 +226,7 @@ public class OrderService {
      */
     @Transactional
     public OrderResponse processPaymentConfirmed(Long orderId, String source) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdWithLock(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         if (order.getStatus() == OrderStatus.COMPLETED) {
@@ -285,7 +287,12 @@ public class OrderService {
 
         boolean allInStock = true;
         for (OrderItem item : order.getItems()) {
-            List<ProductStock> availableStock = productStockRepository.findByProductIdAndSoldFalse(item.getProduct().getId());
+            if (item.getProduct() == null) {
+                log.error("Order #{} item {} has null product — skipping stock check", orderId, item.getId());
+                allInStock = false;
+                break;
+            }
+            List<ProductStock> availableStock = productStockRepository.findByProductIdAndSoldFalseWithLock(item.getProduct().getId());
             if (availableStock.isEmpty()) {
                 allInStock = false;
                 break;
@@ -300,7 +307,8 @@ public class OrderService {
         }
 
         for (OrderItem item : order.getItems()) {
-            List<ProductStock> availableStock = productStockRepository.findByProductIdAndSoldFalse(item.getProduct().getId());
+            if (item.getProduct() == null) continue;
+            List<ProductStock> availableStock = productStockRepository.findByProductIdAndSoldFalseWithLock(item.getProduct().getId());
             if (!availableStock.isEmpty()) {
                 ProductStock stock = availableStock.get(0);
                 stock.setSold(true);
@@ -388,11 +396,13 @@ public class OrderService {
             throw new BadRequestException("Unauthorized: You cannot cancel this order.");
         }
 
-        if (order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.PROCESSING) {
-            throw new BadRequestException("Only pending or processing orders can be cancelled.");
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new BadRequestException("Only unpaid pending orders can be self-cancelled. Contact support for paid orders.");
         }
 
-        orderRepository.delete(order);
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+        log.info("Order #{} cancelled by user [{}]", orderId, userId);
     }
 
     @Transactional
@@ -506,12 +516,8 @@ public class OrderService {
                     double basePrice = item.getProduct().getBasePrice() != null
                             ? item.getProduct().getBasePrice()
                             : (item.getPrice() != null ? item.getPrice() : 0.0);
-                    try {
-                        sellerService.creditSellerBalance(item.getProduct().getSeller().getId(), basePrice);
-                        log.info("Credited ${} to seller [{}] upon Buyer confirmation for Order #{}", basePrice, item.getProduct().getSeller().getId(), orderId);
-                    } catch (Exception e) {
-                        log.warn("Failed to credit seller balance on confirm for Order #{}: {}", orderId, e.getMessage());
-                    }
+                    sellerService.creditSellerBalance(item.getProduct().getSeller().getId(), basePrice);
+                    log.info("Credited ${} to seller [{}] upon Buyer confirmation for Order #{}", basePrice, item.getProduct().getSeller().getId(), orderId);
                 }
             }
             order.setSellerCredited(true);
@@ -544,16 +550,18 @@ public class OrderService {
         for (Order order : deliveredOrders) {
             try {
                 order.setStatus(OrderStatus.COMPLETED);
-                for (OrderItem item : order.getItems()) {
-                    if (item.getProduct() != null && item.getProduct().getSeller() != null) {
-                        double basePrice = item.getProduct().getBasePrice() != null
-                                ? item.getProduct().getBasePrice()
-                                : (item.getPrice() != null ? item.getPrice() : 0.0);
-                        sellerService.creditSellerBalance(item.getProduct().getSeller().getId(), basePrice);
-                        log.info("Auto-released ${} to seller [{}] for Order #{} (48h timer expired)", basePrice, item.getProduct().getSeller().getId(), order.getId());
+                if (!order.isSellerCredited()) {
+                    for (OrderItem item : order.getItems()) {
+                        if (item.getProduct() != null && item.getProduct().getSeller() != null) {
+                            double basePrice = item.getProduct().getBasePrice() != null
+                                    ? item.getProduct().getBasePrice()
+                                    : (item.getPrice() != null ? item.getPrice() : 0.0);
+                            sellerService.creditSellerBalance(item.getProduct().getSeller().getId(), basePrice);
+                            log.info("Auto-released ${} to seller [{}] for Order #{} (48h timer expired)", basePrice, item.getProduct().getSeller().getId(), order.getId());
+                        }
                     }
+                    order.setSellerCredited(true);
                 }
-                order.setSellerCredited(true);
                 orderRepository.save(order);
                 log.info("Order #{} auto-completed after 48h with no buyer dispute.", order.getId());
 
@@ -726,7 +734,7 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new BadRequestException("Unauthorized: You do not own this order.");
         }
 
         if (order.getStatus() != OrderStatus.PENDING) {

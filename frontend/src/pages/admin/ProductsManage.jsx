@@ -31,12 +31,29 @@ const ProductsManage = () => {
   const durationOptions = ['1 Month', '3 Months', '6 Months', '1 Year'];
 
   const stockImages = [
-    { name: 'Netflix',  url: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Spotify',  url: 'https://images.unsplash.com/photo-1611339555312-e607c8352fd7?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Gaming',   url: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Discord',  url: 'https://images.unsplash.com/photo-1614680376739-414d95ff43df?auto=format&fit=crop&w=400&q=80' },
-    { name: 'VPN',      url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80' },
-    { name: 'Adobe',    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80' },
+    { name: 'Netflix', url: '/images/products/netflix.svg' },
+    { name: 'Spotify', url: '/images/products/spotify.svg' },
+    { name: 'ChatGPT', url: '/images/products/chatgpt.svg' },
+    { name: 'Claude AI', url: '/images/products/claude.svg' },
+    { name: 'Grok AI', url: '/images/products/grok.svg' },
+    { name: 'Gemini Pro', url: '/images/products/gemini.svg' },
+    { name: 'Antigravity', url: '/images/products/antigravity.svg' },
+    { name: 'YouTube', url: '/images/products/youtube.svg' },
+    { name: 'Discord', url: '/images/products/discord.svg' },
+    { name: 'Canva Pro', url: '/images/products/canva.svg' },
+    { name: 'CapCut Pro', url: '/images/products/capcut.svg' },
+    { name: 'Alight Motion', url: '/images/products/alightmotion.svg' },
+    { name: 'Steam', url: '/images/products/steam.svg' },
+    { name: 'NordVPN', url: '/images/products/nordvpn.svg' },
+    { name: 'ExpressVPN', url: '/images/products/expressvpn.svg' },
+    { name: 'Surfshark', url: '/images/products/surfshark.svg' },
+    { name: 'HMA VPN', url: '/images/products/hma.svg' },
+    { name: 'Zoom', url: '/images/products/zoom.svg' },
+    { name: 'Apple Music', url: '/images/products/apple.svg' },
+    { name: 'Adobe CC', url: '/images/products/adobe.svg' },
+    { name: 'Disney+', url: '/images/products/disney.svg' },
+    { name: 'Prime Video', url: '/images/products/prime.svg' },
+    { name: 'Telegram', url: '/images/products/telegram.svg' }
   ];
 
   const fetchData = async () => {

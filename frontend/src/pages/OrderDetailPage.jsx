@@ -21,6 +21,7 @@ import {
 } from 'react-icons/fi';
 import { MdStorefront, MdVerified } from 'react-icons/md';
 import { normalizeImageUrl, isImageMedia, extractDeliveryProofUrl } from '../utils/imageUrl';
+import { getProductImageUrl } from '../utils/productImages';
 
 /*  Inline Copy Button  */
 const CopyBtn = ({ text, label }) => {
@@ -500,7 +501,8 @@ const OrderDetailPage = () => {
   const product = firstItem?.product || {};
   const productId = product.id || firstItem?.productId || firstItem?.product?.id || order?.productId;
   const productName = product.name || firstItem?.productName || (isKhmer ? 'ផលិតផល' : 'Product');
-  const productImg = product.imageUrl || firstItem?.productImageUrl || '';
+  const rawProductImg = product.imageUrl || firstItem?.productImageUrl || '';
+  const productImg = getProductImageUrl(productName, rawProductImg);
   const categoryName = product.categoryName || product.category?.name || 'Netflix';
   const totalAmount = Number(order.totalAmount || 0);
   const storeName = order.sellerStoreName || product.sellerStoreName || 'Saby Shop Store';

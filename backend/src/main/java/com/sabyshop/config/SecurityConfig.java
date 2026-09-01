@@ -64,8 +64,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/seller/apply", "/api/seller/verify-subscription").authenticated()
                 // Seller management: must be SELLER or ADMIN
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
-                // Admin endpoints
+                // Admin endpoints (including dispute admin)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/disputes/admin/**").hasRole("ADMIN")
                 // Reviews POST requires auth
                 .requestMatchers("/api/reviews/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
@@ -82,7 +83,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://localhost:*", "*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://localhost:*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token", "Authorization", "X-Device-Id", "X-Device-Name"));

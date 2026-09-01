@@ -36,10 +36,10 @@ public class PaymentService {
     private final RestTemplate bakongRestTemplate;
 
     // ABA PayWay Config (loaded from application.properties / .env)
-    @Value("${aba.payway.merchant-id:ec477571}")
+    @Value("${aba.payway.merchant-id}")
     private String abaPaywayMerchantId;
 
-    @Value("${aba.payway.api-key:4ce6956524915bb922d889f6359fee5555d50448}")
+    @Value("${aba.payway.api-key}")
     private String abaPaywayApiKey;
 
     @Value("${aba.payway.api-url:https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/purchase}")
@@ -317,10 +317,10 @@ public class PaymentService {
         int code = (responseCode instanceof Number n) ? n.intValue() : -1;
 
         if (code != 0) {
-            // Dev testing fallback when Bakong API daily 100-request limit is reached
+            // Bakong API daily limit exceeded — fail safe, do NOT auto-confirm
             if (responseMessage != null && responseMessage.toLowerCase().contains("limit of 100 exceeded")) {
-                log.warn("Bakong Open API daily 100 request limit exceeded! Dev fallback auto-confirmed for MD5 [{}]", md5);
-                return true;
+                log.error("Bakong API daily 100-request limit exceeded! Payment check FAILED SAFE for MD5 [{}]. Renew Bakong token.", md5);
+                return false;
             }
             log.info("Bakong: MD5 [{}] not confirmed -- responseCode={}, message={}", md5, code, responseMessage);
             return false;

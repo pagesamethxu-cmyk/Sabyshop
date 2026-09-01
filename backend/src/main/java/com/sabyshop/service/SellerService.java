@@ -789,7 +789,7 @@ public class SellerService {
  }
 
  @Transactional
- public WithdrawResponseDto requestWithdrawal(Long sellerId, WithdrawRequestDto dto) {
+ public synchronized WithdrawResponseDto requestWithdrawal(Long sellerId, WithdrawRequestDto dto) {
  User seller = userRepository.findById(sellerId)
  .orElseThrow(() -> new ResourceNotFoundException("Seller not found"));
 

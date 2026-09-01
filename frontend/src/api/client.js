@@ -231,16 +231,7 @@ export const seller = {
   getStock: (productId) => client.get(`/seller/products/${productId}/stock`),
   // Orders
   getOrders: () => client.get('/seller/orders'),
-  updateOrderStatus: async (id, status) => {
-    try {
-      return await client.patch(`/seller/orders/${id}/status`, { status });
-    } catch (err) {
-      if (err.response && (err.response.status === 404 || err.response.status === 405)) {
-        return await client.patch(`/admin/orders/${id}/status`, { status });
-      }
-      throw err;
-    }
-  },
+  updateOrderStatus: (id, status) => client.patch(`/seller/orders/${id}/status`, { status }),
   // Balance & Withdrawals
   getBalance: () => client.get('/seller/balance'),
   requestWithdrawal: (data) => client.post('/seller/withdraw', data),
@@ -281,8 +272,6 @@ export const coupons = {
 export const payments = {
   getAll: () => client.get('/admin/payments'),
   getMyPayments: () => client.get('/payments/my-payments'),
-  getAllCommissions: () => client.get('/admin/commissions'),
-  getAllRefunds: () => client.get('/admin/refunds'),
   getAdminCommissions: () => client.get('/admin/commissions'),
   getAdminRefunds: () => client.get('/admin/refunds'),
 };

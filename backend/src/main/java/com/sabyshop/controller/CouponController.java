@@ -23,7 +23,9 @@ public class CouponController {
     private final UserRepository userRepository;
 
     private Long getCurrentUserId(Authentication auth) {
-        if (auth == null) return null;
+        if (auth == null || "anonymousUser".equalsIgnoreCase(auth.getName())) {
+            throw new com.sabyshop.exception.BadRequestException("Authentication required. Please log in.");
+        }
         User user = userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.getId();

@@ -183,34 +183,15 @@ public class AuthService {
             System.err.println("[Google Auth Error] Google API verification failed: " + e.getMessage());
         }
 
-        // Method 2: Local JWT payload fallback (when outbound Google HTTP call fails or is blocked)
-        if ((googleUser == null || googleUser.getEmail() == null) && isJwt) {
-            try {
-                String[] parts = cleanToken.split("\\.");
-                if (parts.length == 3) {
-                    byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(parts[1]);
-                    String jsonPayload = new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8);
-                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                    mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    GoogleUserInfoDto parsedUser = mapper.readValue(jsonPayload, GoogleUserInfoDto.class);
-                    if (parsedUser != null && parsedUser.getEmail() != null && !parsedUser.getEmail().isBlank()) {
-                        if (parsedUser.getIss() != null && parsedUser.getIss().contains("accounts.google.com")) {
-                            googleUser = parsedUser;
-                            System.out.println("[Google Auth] Fallback parsed Google user locally: " + googleUser.getEmail());
-                        }
-                    }
-                }
-            } catch (Exception parseEx) {
-                System.err.println("[Google Auth Error] Local JWT payload parse error: " + parseEx.getMessage());
-            }
-        }
+        // Method 2 (local JWT decode without signature verification) has been removed — security risk.
+        // If Google API calls fail above, the login must fail rather than fall back to unverified local decode.
 
         if (googleUser == null || googleUser.getEmail() == null || googleUser.getEmail().isBlank()) {
             throw new BadRequestException("Failed to verify Google account authentication. Please try again.");
         }
 
         if (googleClientId != null && !googleClientId.trim().isEmpty() && googleUser.getAud() != null && !googleClientId.equals(googleUser.getAud())) {
-            System.err.println("[Google Auth Warning] Client ID mismatch! Configured: " + googleClientId + " | Token aud: " + googleUser.getAud());
+            throw new BadRequestException("Google token was not issued for this application. Login rejected.");
         }
 
         String email = googleUser.getEmail().trim().toLowerCase();
@@ -261,9 +242,16 @@ public class AuthService {
             throw new BadRequestException("Email is already taken");
         }
 
-        // Generate 8-digit code with leading-zero support
-        int raw = secureRandom.nextInt(10_000);
-        String code = String.format("%04d", raw);
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new BadRequestException("Email is required");
+        }
+        if (!request.getEmail().trim().matches("^[\\w.+\\-]+@[\\w\\-]+\\.[a-zA-Z]{2,}$")) {
+            throw new BadRequestException("Invalid email format");
+        }
+
+        // Generate 6-digit code with leading-zero support
+        int raw = secureRandom.nextInt(1_000_000);
+        String code = String.format("%06d", raw);
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
@@ -381,9 +369,9 @@ public class AuthService {
         User user = userRepository.findByEmail(email.trim().toLowerCase())
                 .orElseThrow(() -> new BadRequestException("No account found with this email address"));
 
-        // Generate 4-digit OTP code
-        int raw = secureRandom.nextInt(10_000);
-        String code = String.format("%04d", raw);
+        // Generate 6-digit OTP code
+        int raw = secureRandom.nextInt(1_000_000);
+        String code = String.format("%06d", raw);
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
 
         pendingResetOtps.put(user.getEmail(), new PendingResetOtp(user.getEmail(), code, expiresAt));
@@ -475,8 +463,8 @@ public class AuthService {
         }
 
         String hashedNewPassword = passwordEncoder.encode(newPassword);
-        int raw = secureRandom.nextInt(10_000);
-        String code = String.format("%04d", raw);
+        int raw = secureRandom.nextInt(1_000_000);
+        String code = String.format("%06d", raw);
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
 
         pendingChangePasswordOtps.put(user.getEmail(), new PendingChangePasswordOtp(user.getEmail(), hashedNewPassword, code, expiresAt));
@@ -676,12 +664,12 @@ public class AuthService {
                 headers.setBearerAuth(resendApiKey);
 
                 // Resend test domain (onboarding@resend.dev) only allows sending to your registered owner email.
-                String recipient = "korbsameth.dev@gmail.com";
+                String recipient = toEmail;
 
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("from", "Saby Shop <onboarding@resend.dev>");
                 payload.put("to", recipient);
-                payload.put("subject", subject + (toEmail.equalsIgnoreCase(recipient) ? "" : " [Target: " + toEmail + "]"));
+                payload.put("subject", subject);
                 payload.put("html", htmlContent);
 
                 HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);

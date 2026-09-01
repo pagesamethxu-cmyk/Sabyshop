@@ -418,7 +418,6 @@ export default function CheckoutPage() {
       } catch (_) {}
 
       clearCart();
-      setIsPaymentModalOpen(true);
       toast.success(lang === 'km' ? 'បានបង្កើតការបញ្ជាទិញ! សូមស្កែន ABA QR ដើម្បីទូទាត់' : 'Order created — scan the ABA QR to pay!');
 
       // Start Polling & Verification (backend checks ABA PayWay by tranId = ORD-{orderId})

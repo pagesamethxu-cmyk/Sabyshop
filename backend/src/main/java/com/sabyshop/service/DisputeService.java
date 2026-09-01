@@ -29,7 +29,7 @@ public class DisputeService {
  private final SellerProfileRepository sellerProfileRepository;
  private final TelegramNotificationService telegramNotificationService;
  private final EmailService emailService;
- private final ObjectMapper objectMapper = new ObjectMapper();
+ private final ObjectMapper objectMapper;
 
 
  @org.springframework.context.annotation.Lazy
@@ -274,7 +274,8 @@ public class DisputeService {
  if (item.getProduct() != null && item.getProduct().getSeller() != null) {
  User seller = item.getProduct().getSeller();
  double basePrice = item.getProduct().getBasePrice() != null ? item.getProduct().getBasePrice() : item.getPrice();
- seller.setSellerBalance(Math.max(0.0, seller.getSellerBalance() - basePrice));
+ double currentSellerBal = seller.getSellerBalance() != null ? seller.getSellerBalance() : 0.0;
+ seller.setSellerBalance(Math.max(0.0, currentSellerBal - basePrice));
  userRepository.save(seller);
  }
  }

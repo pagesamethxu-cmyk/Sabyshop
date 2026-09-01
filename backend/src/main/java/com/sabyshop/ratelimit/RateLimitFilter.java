@@ -41,14 +41,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String ip   = resolveClientIp(request);
         String path = request.getRequestURI();
 
-        // Bypass Swagger UI and OpenAPI documentation from rate limit checks
-        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/webjars") || path.equals("/swagger-ui.html")) {
+        // Bypass Swagger UI, OpenAPI, static assets, and uploaded media downloads (GET /uploads/**)
+        if (isStaticOrMediaServing(request, path)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            // 1. Global IP gate (applies to every request)
+            // 1. Global IP gate (applies to every API request)
             rateLimiterService.checkGlobalIp(ip);
 
             // 2. Auth-specific strict limit
@@ -58,7 +58,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 // Resolve authenticated principal (may be null for public routes)
                 String principal = resolvePrincipal(ip);
 
-                if (isUploadPath(path)) {
+                if (isUploadPost(request, path)) {
                     rateLimiterService.checkUpload(principal);
                 } else if (isOrderPath(path)) {
                     rateLimiterService.checkOrder(principal);
@@ -77,12 +77,40 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     // ── Path helpers ─────────────────────────────────────────────────────────
 
+    private boolean isStaticOrMediaServing(HttpServletRequest request, String path) {
+        String method = request.getMethod();
+        // Only GET / HEAD requests for static media are bypassed
+        if (!"GET".equalsIgnoreCase(method) && !"HEAD".equalsIgnoreCase(method)) {
+            return false;
+        }
+        return path.startsWith("/api/admin/uploads/") ||
+               path.startsWith("/api/seller/uploads/") ||
+               path.startsWith("/api/uploads/") ||
+               path.startsWith("/uploads/") ||
+               path.startsWith("/api/chat/attachments/") ||
+               path.startsWith("/images/") ||
+               path.startsWith("/assets/") ||
+               path.startsWith("/swagger-ui") ||
+               path.startsWith("/v3/api-docs") ||
+               path.startsWith("/webjars") ||
+               path.equals("/swagger-ui.html") ||
+               path.equals("/favicon.ico");
+    }
+
     private boolean isAuthPath(String path) {
         return path.startsWith("/api/auth/");
     }
 
-    private boolean isUploadPath(String path) {
-        return path.contains("/upload");
+    private boolean isUploadPost(HttpServletRequest request, String path) {
+        String method = request.getMethod();
+        if (!"POST".equalsIgnoreCase(method) && !"PUT".equalsIgnoreCase(method)) {
+            return false;
+        }
+        return path.equals("/api/admin/upload") ||
+               path.equals("/api/seller/upload") ||
+               path.equals("/api/uploads") ||
+               path.contains("/upload") ||
+               path.contains("/attachment");
     }
 
     private boolean isOrderPath(String path) {

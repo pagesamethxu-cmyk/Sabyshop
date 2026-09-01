@@ -41,7 +41,7 @@ public class PayWayWebhookController {
     private final PaymentService paymentService;
     private final OrderService orderService;
 
- @Value("${aba.payway.api-key:4ce6956524915bb922d889f6359fee5555d50448}")
+ @Value("${aba.payway.api-key}")
  private String apiKey;
 
  @Value("${app.base-url:http://localhost:5173}")
@@ -211,8 +211,8 @@ public class PayWayWebhookController {
  }
 
  // Verify HMAC-SHA512 hash to confirm payload authenticity
- if (!receivedHash.isBlank() && !paymentService.verifyWebhookHash(tranId, status, receivedHash)) {
- log.warn("ABA PayWay Webhook: invalid hash for tran_id=[{}] — rejecting", tranId);
+ if (receivedHash.isBlank() || !paymentService.verifyWebhookHash(tranId, status, receivedHash)) {
+ log.warn("ABA PayWay Webhook: missing or invalid hash for tran_id=[{}] — rejecting", tranId);
  response.put("status", 1);
  response.put("description", "Hash verification failed");
  return ResponseEntity.status(403).body(response);

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="gRichStar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF3366"/>
+      <stop offset="25%" stop-color="#FF9900"/>
+      <stop offset="50%" stop-color="#00E676"/>
+      <stop offset="75%" stop-color="#2979FF"/>
+      <stop offset="100%" stop-color="#651FFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="#FFFFFF"/>
+  <path d="M 50 14 C 50 33 60 43 78 50 C 60 57 50 67 50 86 C 50 67 40 57 22 50 C 40 43 50 33 50 14 Z" fill="url(#gRichStar)"/>
+</svg>

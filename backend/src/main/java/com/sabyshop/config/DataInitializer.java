@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
+@org.springframework.context.annotation.Profile("dev")
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -129,12 +130,12 @@ public class DataInitializer implements CommandLineRunner {
             
             categoryRepository.saveAll(List.of(c1, c2, c3, c4, c5));
 
-            Product p1 = Product.builder().name("Netflix Premium").category(c2).price(12.99).description("Premium Netflix account with 4K streaming").createdAt(LocalDateTime.now()).active(true).build();
-            Product p2 = Product.builder().name("Spotify Premium").category(c2).price(9.99).description("Spotify Premium individual account").createdAt(LocalDateTime.now()).active(true).build();
-            Product p3 = Product.builder().name("Steam Account").category(c1).price(15.99).description("Steam account with games library").createdAt(LocalDateTime.now()).active(true).build();
-            Product p4 = Product.builder().name("Discord Nitro").category(c4).price(4.99).description("Discord Nitro 1 month subscription").createdAt(LocalDateTime.now()).active(true).build();
-            Product p5 = Product.builder().name("NordVPN Premium").category(c5).price(8.99).description("1 Year NordVPN Premium subscription").createdAt(LocalDateTime.now()).active(true).build();
-            Product p6 = Product.builder().name("Adobe Creative Cloud").category(c3).price(24.99).description("Adobe CC all apps subscription").createdAt(LocalDateTime.now()).active(true).build();
+            Product p1 = Product.builder().name("Netflix Premium").category(c2).price(12.99).imageUrl("/images/products/netflix.svg").duration("1 Month").productType("ACCOUNT").productLabel("HOT").description("Premium Netflix account with 4K streaming").createdAt(LocalDateTime.now()).active(true).build();
+            Product p2 = Product.builder().name("Spotify Premium").category(c2).price(9.99).imageUrl("/images/products/spotify.svg").duration("1 Month").productType("ACCOUNT").productLabel("BEST_SELLER").description("Spotify Premium individual account").createdAt(LocalDateTime.now()).active(true).build();
+            Product p3 = Product.builder().name("Steam Account").category(c1).price(15.99).imageUrl("/images/products/steam.svg").duration("1 Month").productType("ACCOUNT").productLabel("PROMO").description("Steam account with games library").createdAt(LocalDateTime.now()).active(true).build();
+            Product p4 = Product.builder().name("Discord Nitro").category(c4).price(4.99).imageUrl("/images/products/discord.svg").duration("1 Month").productType("ACCOUNT").productLabel("HOT").description("Discord Nitro 1 month subscription").createdAt(LocalDateTime.now()).active(true).build();
+            Product p5 = Product.builder().name("NordVPN Premium").category(c5).price(8.99).imageUrl("/images/products/nordvpn.svg").duration("1 Year").productType("ACCOUNT").productLabel("HOT").description("1 Year NordVPN Premium subscription").createdAt(LocalDateTime.now()).active(true).build();
+            Product p6 = Product.builder().name("Adobe Creative Cloud").category(c3).price(24.99).imageUrl("/images/products/adobe.svg").duration("1 Month").productType("ACCOUNT").productLabel("NONE").description("Adobe CC all apps subscription").createdAt(LocalDateTime.now()).active(true).build();
             
             List<Product> products = List.of(p1, p2, p3, p4, p5, p6);
             productRepository.saveAll(products);
@@ -150,6 +151,45 @@ public class DataInitializer implements CommandLineRunner {
                     productStockRepository.save(stock);
                 }
             }
+        }
+
+        // Auto-migrate any existing database products that have missing/placeholder/unsplash imageUrls
+        try {
+            List<Product> allExistingProducts = productRepository.findAll();
+            for (Product prod : allExistingProducts) {
+                String name = prod.getName() != null ? prod.getName().toLowerCase() : "";
+                String curImg = prod.getImageUrl();
+                boolean needsUpdate = curImg == null || curImg.isBlank() || curImg.contains("unsplash.com");
+                if (needsUpdate) {
+                    if (name.contains("netflix")) prod.setImageUrl("/images/products/netflix.svg");
+                    else if (name.contains("spotify")) prod.setImageUrl("/images/products/spotify.svg");
+                    else if (name.contains("chatgpt") || name.contains("gpt") || name.contains("openai")) prod.setImageUrl("/images/products/chatgpt.svg");
+                    else if (name.contains("claude") || name.contains("anthropic")) prod.setImageUrl("/images/products/claude.svg");
+                    else if (name.contains("grok") || name.contains("xai")) prod.setImageUrl("/images/products/grok.svg");
+                    else if (name.contains("gemini")) prod.setImageUrl("/images/products/gemini.svg");
+                    else if (name.contains("antigravity")) prod.setImageUrl("/images/products/antigravity.svg");
+                    else if (name.contains("youtube")) prod.setImageUrl("/images/products/youtube.svg");
+                    else if (name.contains("discord") || name.contains("nitro")) prod.setImageUrl("/images/products/discord.svg");
+                    else if (name.contains("canva")) prod.setImageUrl("/images/products/canva.svg");
+                    else if (name.contains("capcut")) prod.setImageUrl("/images/products/capcut.svg");
+                    else if (name.contains("alight") || name.contains("alight motion")) prod.setImageUrl("/images/products/alightmotion.svg");
+                    else if (name.contains("steam")) prod.setImageUrl("/images/products/steam.svg");
+                    else if (name.contains("hma") || name.contains("hide my ass")) prod.setImageUrl("/images/products/hma.svg");
+                    else if (name.contains("express") || name.contains("expressvpn")) prod.setImageUrl("/images/products/expressvpn.svg");
+                    else if (name.contains("surfshark")) prod.setImageUrl("/images/products/surfshark.svg");
+                    else if (name.contains("nord") || name.contains("nordvpn")) prod.setImageUrl("/images/products/nordvpn.svg");
+                    else if (name.contains("vpn") || name.contains("security")) prod.setImageUrl("/images/products/nordvpn.svg");
+                    else if (name.contains("zoom")) prod.setImageUrl("/images/products/zoom.svg");
+                    else if (name.contains("apple")) prod.setImageUrl("/images/products/apple.svg");
+                    else if (name.contains("adobe") || name.contains("creative")) prod.setImageUrl("/images/products/adobe.svg");
+                    else if (name.contains("disney")) prod.setImageUrl("/images/products/disney.svg");
+                    else if (name.contains("prime") || name.contains("amazon")) prod.setImageUrl("/images/products/prime.svg");
+                    else if (name.contains("telegram")) prod.setImageUrl("/images/products/telegram.svg");
+                    productRepository.save(prod);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Notice: Product image migration notice: {}", e.getMessage());
         }
 
         if (autoReplyRepository.count() == 0) {
