@@ -83,10 +83,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://localhost:*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://sabyshop.com",
+            "https://www.sabyshop.com",
+            "https://*.sabyshop.com",
+            "https://*.pages.dev",
+            "https://*.onrender.com",
+            "*"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("x-auth-token", "Authorization", "X-Device-Id", "X-Device-Name"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token", "Authorization", "X-Device-Id", "X-Device-Name", "Retry-After", "X-RateLimit-Reset"));
         configuration.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

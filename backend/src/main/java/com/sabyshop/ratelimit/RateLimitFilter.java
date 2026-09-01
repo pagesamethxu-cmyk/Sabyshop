@@ -41,6 +41,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String ip   = resolveClientIp(request);
         String path = request.getRequestURI();
 
+        // Bypass OPTIONS CORS preflights immediately
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Bypass Swagger UI, OpenAPI, static assets, and uploaded media downloads (GET /uploads/**)
         if (isStaticOrMediaServing(request, path)) {
             filterChain.doFilter(request, response);

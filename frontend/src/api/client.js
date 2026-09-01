@@ -1,8 +1,22 @@
 import axios from 'axios';
 import { getDeviceId, getDeviceName } from '../utils/deviceInfo';
 
+export const getBaseApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim()) {
+    return envUrl.trim();
+  }
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname.includes('sabyshop.com') || hostname.includes('pages.dev')) {
+      return 'https://api.sabyshop.com/api';
+    }
+  }
+  return '/api';
+};
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseApiUrl(),
 });
 
 client.interceptors.request.use((config) => {
