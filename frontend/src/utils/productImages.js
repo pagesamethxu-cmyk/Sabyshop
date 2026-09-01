@@ -16,14 +16,20 @@ const BRAND_ICONS = {
   steam: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%23171a21"/><text x="24" y="31" text-anchor="middle" font-size="20" font-weight="bold" fill="white" font-family="Arial">ST</text></svg>`,
   minecraft: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%23557A2B"/><text x="24" y="31" text-anchor="middle" font-size="20" font-weight="bold" fill="white" font-family="Arial">MC</text></svg>`,
   nordvpn: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%234687ED"/><path d="M24 12L36 34H28L24 26L20 34H12L24 12Z" fill="white"/></svg>`,
-  adobe: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%23FF0000"/><path d="M19 12H13V36H19V12ZM29 12H35V36H29V12ZM21 21L27 36H21V21Z" fill="white"/></svg>`
+  adobe: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%23FF0000"/><path d="M19 12H13V36H19V12ZM29 12H35V36H29V12ZM21 21L27 36H21V21Z" fill="white"/></svg>`,
+  zoom: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%232D8CFF"/><path d="M22 36C22 32.686 24.686 30 28 30H54C57.314 30 60 32.686 60 36V64C60 67.314 57.314 70 54 70H28C24.686 70 22 67.314 22 64V36Z" fill="white"/><path d="M64 42.5L78 33V67L64 57.5V42.5Z" fill="white"/></svg>`,
+  expressvpn: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23DA3940"/><path d="M30 32H70V44H44V50H66V62H44V68H70V80H30V32Z" fill="white"/></svg>`,
+  surfshark: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%231DB9A0"/><path d="M50 20C38 20 30 28 30 38C30 52 50 56 50 66C50 72 44 76 36 74C34 73.5 32 72 30 70V80C34 82 40 84 48 84C62 84 70 76 70 64C70 48 50 46 50 36C50 30 56 28 62 30C65 31 68 33 70 35V24C65 21 58 20 50 20Z" fill="white"/></svg>`,
+  hma: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23FFCC00"/><rect x="25" y="30" width="50" height="40" rx="10" fill="%23222222"/><text x="50" y="56" text-anchor="middle" font-size="16" font-weight="900" fill="%23FFCC00" font-family="Arial, sans-serif">HMA</text></svg>`,
+  prime: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%2300A8E1"/><path d="M28 42C28 36.477 32.477 32 38 32H62C67.523 32 72 36.477 72 42V58C72 63.523 67.523 68 62 68H38C32.477 68 28 63.523 28 58V42Z" fill="none" stroke="white" stroke-width="6"/><path d="M26 74C38 80 62 80 74 74" stroke="%23FF9900" stroke-width="6" stroke-linecap="round" fill="none"/></svg>`,
+  telegram: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="%2324A1DE"/><path d="M35 14L11 23.5L19 26.5L22 34.5L25.5 30L30.5 33.5L35 14Z" fill="white"/><path d="M19 26.5L31 17.5L22 28.5V34.5L19 26.5Z" fill="%23D0E6F7"/></svg>`
 };
 
 import { normalizeImageUrl } from './imageUrl';
 
 /**
  * Resolves an image URL for a given product name and custom imageUrl.
- * Returns custom imageUrl if valid, or static local path /images/products/ for known brands.
+ * Returns custom imageUrl if valid, or static local path / SVG for known brands.
  */
 export const getProductImageUrl = (name = '', imageUrl = '') => {
   if (imageUrl && imageUrl.trim()) return normalizeImageUrl(imageUrl);
@@ -40,6 +46,12 @@ export const getProductImageUrl = (name = '', imageUrl = '') => {
   if (lower.includes('disney')) return '/images/products/disney.svg';
   if (lower.includes('apple')) return BRAND_ICONS.apple;
   if (lower.includes('gemini')) return BRAND_ICONS.gemini;
+  if (lower.includes('zoom')) return BRAND_ICONS.zoom;
+  if (lower.includes('express')) return BRAND_ICONS.expressvpn;
+  if (lower.includes('surfshark')) return BRAND_ICONS.surfshark;
+  if (lower.includes('hma') || lower.includes('hide my ass')) return BRAND_ICONS.hma;
+  if (lower.includes('prime') || lower.includes('amazon')) return BRAND_ICONS.prime;
+  if (lower.includes('telegram')) return BRAND_ICONS.telegram;
   if (lower.includes('steam')) return '/images/products/steam.svg';
   if (lower.includes('minecraft')) return BRAND_ICONS.minecraft;
   if (lower.includes('nord') || lower.includes('vpn')) return '/images/products/nordvpn.svg';

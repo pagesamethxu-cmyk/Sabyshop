@@ -1,36 +1,29 @@
 package com.sabyshop.bot;
 
-import com.sabyshop.service.TelegramBotHandlerService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 @Component
-public class Bot extends TelegramLongPollingBot {
+public class Bot extends DefaultAbsSender {
 
     private final String botUsername;
-    private final TelegramBotHandlerService handlerService;
+    private final String botToken;
 
     public Bot(
             @Value("${telegram.bot.token:8939523816:AAHvOjdFZYG8EN68RO0OZ5JuenIy_TWFkvE}") String token,
-            @Value("${telegram.bot.username:sabyshop_notication_bot}") String botUsername,
-            @Lazy TelegramBotHandlerService handlerService) {
-        super(token);
+            @Value("${telegram.bot.username:sabyshop_notication_bot}") String botUsername) {
+        super(new DefaultBotOptions(), token);
         this.botUsername = botUsername;
-        this.handlerService = handlerService;
+        this.botToken = token;
     }
 
-    @Override
     public String getBotUsername() {
         return botUsername;
     }
 
-    @Override
-    public void onUpdateReceived(Update update) {
-        if (handlerService != null) {
-            handlerService.handleUpdate(update);
-        }
+    public String getBotToken() {
+        return botToken;
     }
 }

@@ -44,7 +44,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**", "/api/products/**", "/api/categories/**",
-                        "/api/contact/**", "/h2-console/**").permitAll()
+                        "/api/contact/**", "/h2-console/**", "/api/telegram/**").permitAll()
                 // Payment callbacks, webhooks, QR generation & transaction verification
                 .requestMatchers("/api/payments/my-payments").authenticated()
                 .requestMatchers("/api/payments/**").permitAll()

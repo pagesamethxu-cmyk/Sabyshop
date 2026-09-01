@@ -11,6 +11,9 @@ export const getBackendOrigin = () => {
       return '';
     }
   }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('sabyshop.com')) {
+    return 'https://api.sabyshop.com';
+  }
   return '';
 };
 
@@ -25,9 +28,14 @@ export const normalizeImageUrl = (url) => {
 
   // If contains http://localhost:8080 or http://127.0.0.1:8080, replace with live backend origin in production
   const origin = getBackendOrigin();
-  if (origin && (trimmed.startsWith('http://localhost:8080') || trimmed.startsWith('http://127.0.0.1:8080'))) {
-    trimmed = trimmed.replace(/^http:\/\/(localhost|127\.0\.0\.1):8080/, origin);
+  if (origin && (trimmed.startsWith('http://localhost:8080') || trimmed.startsWith('http://127.0.0.1:8080') || trimmed.startsWith('http://localhost:') || trimmed.startsWith('http://127.0.0.1:'))) {
+    trimmed = trimmed.replace(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, origin);
     return trimmed;
+  }
+
+  // If on HTTPS (like https://sabyshop.com on mobile Safari), upgrade insecure http:// to https:// to prevent Mixed Content blocking
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && trimmed.startsWith('http://')) {
+    trimmed = trimmed.replace(/^http:\/\//i, 'https://');
   }
 
   // If already absolute or special URI scheme

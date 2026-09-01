@@ -12,6 +12,8 @@ spring:
             enable: true
 telegram:
   bot:
-    token: "8939523816:AAHvOjdFZYG8EN68RO0OZ5JuenIy_TWFkvE"
-    username: "SabyShopBot"
-    adminChatId: "YOUR_ADMIN_CHAT_ID"
+    token: "${TELEGRAM_BOT_TOKEN:8939523816:AAHvOjdFZYG8EN68RO0OZ5JuenIy_TWFkvE}"
+    username: "${TELEGRAM_BOT_USERNAME:sabyshop_notication_bot}"
+    adminChatId: "${TELEGRAM_BOT_ADMIN_CHAT_ID:YOUR_ADMIN_CHAT_ID}"
+    webhook-url: "${TELEGRAM_WEBHOOK_URL:}"
+    secret-token: "${TELEGRAM_BOT_SECRET_TOKEN:}"
