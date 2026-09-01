@@ -262,7 +262,7 @@ const TypewriterTitle = () => {
 };
 
 const HomePage = () => {
- const { t } = useLanguage();
+ const { t, isKhmer } = useLanguage();
  const { user } = useAuth();
  const isSeller = user?.role === 'SELLER';
  const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -559,11 +559,17 @@ const HomePage = () => {
 
  {loading ? (
  <LoadingSpinner />
- ) : (
+ ) : featuredProducts.length > 0 ? (
  <div className="grid grid-3">
- {featuredProducts.map(product => (
+ {featuredProducts.slice(0, 6).map(product => (
  <ProductCard key={product.id} product={product} />
  ))}
+ </div>
+ ) : (
+ <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-light)' }}>
+ <p style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+ {isKhmer ? 'មិនទាន់មានផលិតផលនៅឡើយទេ' : 'No products available at the moment'}
+ </p>
  </div>
  )}
 
